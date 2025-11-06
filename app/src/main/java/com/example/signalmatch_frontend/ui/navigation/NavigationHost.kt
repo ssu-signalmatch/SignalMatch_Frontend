@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.signalmatch_frontend.ui.landing.LandingScreen
+import com.example.signalmatch_frontend.ui.login.LoginScreen
 
 
 @Composable
@@ -15,5 +16,6 @@ fun NavigationHost(navController: NavHostController = rememberNavController()) {
         startDestination = "landing"
     ) {
         composable("landing") { LandingScreen(navController) }
+        composable("login") { LoginScreen(navController) }
     }
 }
