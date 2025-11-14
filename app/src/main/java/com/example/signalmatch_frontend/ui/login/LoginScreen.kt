@@ -96,7 +96,7 @@ fun LoginScreen(navController: NavController,
                 false -> {
                     Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
                 }
-                null -> { /*공백*/}
+                null -> { }
             }
         }
     }
