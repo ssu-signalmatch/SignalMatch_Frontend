@@ -1,9 +1,8 @@
-package com.example.signalmatch_frontend.ui.investor.profilecreate
+package com.example.signalmatch_frontend.ui.startup.profilecreate
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +14,7 @@ import androidx.navigation.NavController
 import com.example.signalmatch_frontend.viewmodel.CreateProfileViewModel
 
 @Composable
-fun InvestorCreateProfileRoute(
+fun StartupCreateProfileRoute(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: CreateProfileViewModel = hiltViewModel()
@@ -27,12 +26,14 @@ fun InvestorCreateProfileRoute(
         when (uiState) {
             is CreateProfileViewModel.UiState.Success -> {
                 navController.navigate("home") {
-                    popUpTo("success") { inclusive = true }
+                    popUpTo("startup_create") { inclusive = true }
                 }
             }
+
             is CreateProfileViewModel.UiState.Error -> {
                 Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
             }
+
             else -> Unit
         }
     }
@@ -40,7 +41,7 @@ fun InvestorCreateProfileRoute(
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        InvestorCreateProfileScreen(
+        StartupCreateProfileScreen(
             modifier = Modifier.fillMaxSize(),
             onSubmit = { form ->
                 viewModel.submit(form)

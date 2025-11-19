@@ -22,7 +22,7 @@ private val ExposedColors @Composable get() = TextFieldDefaults.colors(
 @Composable
 fun ProfileExposedDropdown(
     label: String,
-    selected: String?,
+    selected: String,
     options: List<String>,
     onSelect: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -36,15 +36,17 @@ fun ProfileExposedDropdown(
     ) {
         OutlinedTextField(
             readOnly = true,
-            value = selected.orEmpty(),
+            value = selected,
             onValueChange = {},
             placeholder = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier
                 .menuAnchor()
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .heightIn(min = 56.dp),
             shape = ExposedShape,
-            colors = ExposedColors
+            colors = ExposedColors,
+            singleLine = true
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             options.forEach { opt ->

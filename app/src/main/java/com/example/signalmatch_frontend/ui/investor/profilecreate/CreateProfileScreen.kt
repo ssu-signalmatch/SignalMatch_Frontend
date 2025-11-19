@@ -42,20 +42,20 @@ private val INDUSTRY_AREAS = listOf(
 )
 
 data class InvestorProfileForm(
-    val investorName: String?,
+    val investorName: String,
     val phoneNumber: String,
     val contactEmail: String,
     val organizationName: String,
     val websiteUrl: String,
     val intro: String,
-    val investorType: String?,
-    val preferredInvestmentSize: String?,
+    val investorType: String,
+    val preferredInvestmentSize: String,
     val preferredStages: Set<String>,
     val preferredAreas: Set<String>,
 )
 
 @Composable
-fun CreateProfileScreen(
+fun InvestorCreateProfileScreen(
     modifier: Modifier = Modifier,
     onSubmit: (InvestorProfileForm) -> Unit = {}
 ) {
@@ -65,8 +65,8 @@ fun CreateProfileScreen(
     var contactEmail by remember { mutableStateOf("") }
     var websiteUrl by remember { mutableStateOf("") }
     var intro by remember { mutableStateOf("") }
-    var investorType by remember { mutableStateOf<String?>(null) }
-    var preferredInvestmentSize by remember { mutableStateOf<String?>(null) }
+    var investorType by remember { mutableStateOf("") }
+    var preferredInvestmentSize by remember { mutableStateOf("") }
     var preferredStages by remember { mutableStateOf(setOf<String>()) }
     var preferredAreas by remember { mutableStateOf(setOf<String>()) }
 
@@ -166,8 +166,8 @@ fun CreateProfileScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFAEF1EB),
                 contentColor = Color.White,
-                disabledContainerColor = Color(0xFFAEF1EB).copy(alpha = 0.4f), // 선택
-                disabledContentColor = Color.White.copy(alpha = 0.6f)          // 선택
+                disabledContainerColor = Color(0xFFAEF1EB).copy(alpha = 0.4f),
+                disabledContentColor = Color.White.copy(alpha = 0.6f)
             ),
             modifier = Modifier
                 .height(50.dp)
@@ -180,8 +180,8 @@ fun CreateProfileScreen(
                         contactEmail.isNotBlank() &&
                         websiteUrl.isNotBlank() &&
                         intro.isNotBlank() &&
-                        investorType != null &&
-                        preferredInvestmentSize != null &&
+                        investorType.isNotBlank() &&
+                        preferredInvestmentSize.isNotBlank()&&
                         preferredStages.isNotEmpty() &&
                         preferredAreas.isNotEmpty()
         ) {
@@ -199,6 +199,6 @@ fun CreateProfileScreen(
 @Preview
 @Composable
 fun ProfilePreview(){
-    CreateProfileScreen()
+    InvestorCreateProfileScreen()
 }
 
