@@ -1,7 +1,5 @@
 package com.example.signalmatch_frontend.data.model.Request
 
-import java.time.LocalDate
-
 data class StartupCreateProfileRequest(
     val representativeBio: String, //임시
     val startupName: String,

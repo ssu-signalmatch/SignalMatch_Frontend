@@ -42,8 +42,7 @@ fun ProfileExposedDropdown(
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier
                 .menuAnchor()
-                .fillMaxWidth()
-                .heightIn(min = 56.dp),
+                .fillMaxWidth(),
             shape = ExposedShape,
             colors = ExposedColors,
             singleLine = true
