@@ -83,7 +83,7 @@ fun LoginScreen(navController: NavController,
             question = "아직 계정이 없으신가요?",
             actionText = "회원가입",
             onActionClick = {
-                navController.navigate("signup_role")
+                navController.navigate("signup")
             }
         )
         LaunchedEffect(loginSuccess) {

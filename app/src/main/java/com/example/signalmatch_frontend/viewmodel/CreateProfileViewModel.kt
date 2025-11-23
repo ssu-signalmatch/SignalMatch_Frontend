@@ -4,8 +4,10 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.signalmatch_frontend.data.model.Request.InvestorCreateProfileRequest
+import com.example.signalmatch_frontend.data.model.Request.StartupCreateProfileRequest
 import com.example.signalmatch_frontend.data.repository.ProfileRepository
 import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorProfileForm
+import com.example.signalmatch_frontend.ui.startup.profilecreate.StartupProfileForm
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,7 +36,7 @@ class CreateProfileViewModel @Inject constructor(
                     investorName = form.investorName,
                     phoneNumber = form.phoneNumber,
                     contactEmail = form.contactEmail,
-                    organization = form.organizationName,
+                    organizationName = form.organizationName,
                     websiteUrl = form.websiteUrl,
                     intro = form.intro,
                     investorType = form.investorType,
@@ -42,7 +44,7 @@ class CreateProfileViewModel @Inject constructor(
                     preferredStages = form.preferredStages.toList(),
                     preferredAreas = form.preferredAreas.toList()
                 )
-                profileRepository.createProfile(req)
+                profileRepository.investorCreateProfile(req)
             }.onSuccess { res ->
                 if (res.success && res.data != null) {
                     uiState = UiState.Success(res.data.investorId, res.message)
@@ -54,4 +56,44 @@ class CreateProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun submit(form: StartupProfileForm) {
+        viewModelScope.launch {
+            uiState = UiState.Loading
+
+            runCatching {
+                val req = StartupCreateProfileRequest(
+                    representativeBio = form.representativeBio, //임시
+                    startupName = form.startupName,
+                    status = form.status,
+                    foundingDate = form.foundingDate,
+                    address = form.address,
+                    homepageUrl = form.homepageUrl,
+                    contactEmail = form.contactEmail,
+                    intro = form.intro,
+                    representativeName = form.representativeName,
+                    businessNumber = form.businessNumber,
+                    employeeCount = form.employeeCount,
+                    legalType = form.legalType,
+                    scale = form.scale,
+                    revenue = form.revenue,
+                    profit = form.profit,
+                    fundingRounds = form.fundingRounds,
+                    totalFunding = form.totalFunding,
+                    investorStages = form.investorStage,
+                    businessAreas = form.businessAreas.toList()
+                )
+                profileRepository.startupCreateProfile(req)
+            }.onSuccess { res ->
+                if (res.success && res.data != null) {
+                    uiState = UiState.Success(res.data.startupId, res.message)
+                } else {
+                    uiState = UiState.Error(res.message ?: "프로필 생성 실패")
+                }
+            }.onFailure { e ->
+                uiState = UiState.Error(e.message ?: "네트워크 오류")
+            }
+        }
+    }
+
 }
