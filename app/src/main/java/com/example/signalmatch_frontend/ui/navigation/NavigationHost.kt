@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.signalmatch_frontend.ui.chat.ChatListScreen
+import com.example.signalmatch_frontend.ui.chat.list.ChatListScreen
 import com.example.signalmatch_frontend.ui.landing.LandingScreen
 import com.example.signalmatch_frontend.ui.login.LoginScreen
 import com.example.signalmatch_frontend.ui.home.HomeScreen

@@ -1,4 +1,4 @@
-package com.example.signalmatch_frontend.ui.chat
+package com.example.signalmatch_frontend.ui.chat.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,9 +23,7 @@ import com.example.signalmatch_frontend.ui.components.etc.Logo
 fun ChatListScreenPreview () {
     val navController: NavHostController = rememberNavController()
 
-    ChatListScreen(
-        navController = navController
-    )
+    ChatListScreen(navController = navController)
 }
 
 @Composable
@@ -38,11 +36,11 @@ fun ChatListScreen (navController: NavController) {
         verticalArrangement = Arrangement.Top
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Logo(105.dp)
+        Logo(size = 105.dp)
         ChatListContainer(
             chatItems = arrayListOf(
-                ChatListItem(name = "Lorem Ipsum", preview="Lorem Ipsum", time = "오후 55:55", badge = "999"),
-                ChatListItem(name = "Lorem Ipsum", preview="Lorem Ipsum", time = "오후 55:55", badge = "999")
+                ChatListItem(chatId = "", name = "Lorem Ipsum", preview="Lorem Ipsum", time = "오후 55:55", badge = 999L),
+                ChatListItem(chatId = "", name = "Lorem Ipsum", preview="Lorem Ipsum", time = "오후 55:55", badge = 999L)
             )
         )
     }
