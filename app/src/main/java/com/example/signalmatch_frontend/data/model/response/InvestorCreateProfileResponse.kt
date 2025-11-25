@@ -1,4 +1,4 @@
-package com.example.signalmatch_frontend.data.model.Response
+package com.example.signalmatch_frontend.data.model.response
 
 data class InvestorCreateProfileResponse(
     val message: String?,

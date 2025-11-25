@@ -11,11 +11,16 @@ import com.example.signalmatch_frontend.ui.chat.list.ChatListScreen
 import com.example.signalmatch_frontend.ui.landing.LandingScreen
 import com.example.signalmatch_frontend.ui.login.LoginScreen
 import com.example.signalmatch_frontend.ui.home.HomeScreen
+import com.example.signalmatch_frontend.ui.investor.mypage.InvestorMypageRoute
 import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorCreateProfileRoute
+import com.example.signalmatch_frontend.ui.mypage.FAQScreen
+import com.example.signalmatch_frontend.ui.mypage.ManageAccountScreen
+import com.example.signalmatch_frontend.ui.mypage.bookmark_list.BookmarkRoute
+import com.example.signalmatch_frontend.ui.mypage.matching_list.MatchingListRoute
 import com.example.signalmatch_frontend.ui.signup.SignupRoleScreen
 import com.example.signalmatch_frontend.ui.signup.SignupScreen
+import com.example.signalmatch_frontend.ui.startup.mypage.StartupMypageRoute
 import com.example.signalmatch_frontend.ui.startup.profilecreate.StartupCreateProfileRoute
-import com.example.signalmatch_frontend.ui.startup.mypage.StartupMypageScreen
 
 
 @Composable
@@ -46,8 +51,30 @@ fun NavigationHost(
         composable("signup") { SignupRoleScreen(navController) }
         composable("search")  { /* SearchScreen(navController) */ }
         composable("matching")   { /* MatchingScreen(navController) */ }
-        composable("message") { ChatListScreen(navController) }
-        composable("mypage-startup")  { StartupMypageScreen(navController) }
-        composable("bookmarks") { /*BookmarksScreen(navController)*/ }
+        composable("message") { /* MessageScreen(navController) */ }
+        composable("mypage-startup")  {
+            StartupMypageRoute(
+                navController = navController,
+                userId = 1
+            )
+        }
+        composable("mypage-investor")  {
+            InvestorMypageRoute(
+                navController = navController,
+                userId = 1
+            )
+        }
+        composable("bookmark") {
+            BookmarkRoute(
+                navController = navController
+            )
+        }
+        composable("matching-list") {
+            MatchingListRoute(
+                navController = navController
+            )
+        }
+        composable("manage account") { ManageAccountScreen(navController)}
+        composable("FAQ") { FAQScreen(navController)}
     }
 }

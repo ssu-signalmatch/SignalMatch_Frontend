@@ -20,7 +20,7 @@ import com.example.signalmatch_frontend.ui.components.etc.Logo
 import com.example.signalmatch_frontend.ui.components.text.ProfileOutlinedTextField
 
 data class StartupProfileForm(
-    val representativeBio : String, //임시
+    val history : String, //임시
     val startupName : String,
     val foundingDate : String, // LocalDate -> String
     val scale : String,
@@ -73,7 +73,7 @@ fun StartupCreateProfileScreen(
     modifier: Modifier = Modifier,
     onSubmit: (StartupProfileForm) -> Unit = {}
 ) {
-    var representativeBio by remember { mutableStateOf("") } // 임시 변수 명: 대표자 약력
+    var history by remember { mutableStateOf("") } // 임시 변수 명: 대표자 약력
     var startupName by remember { mutableStateOf("") }
     var foundingDate by remember { mutableStateOf("") }
     var scale by remember { mutableStateOf("") }
@@ -177,7 +177,7 @@ fun StartupCreateProfileScreen(
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(12.dp))
-        ProfileOutlinedTextField(value = representativeBio , onValueChange = { representativeBio = it }, placeholder = "대표자 약력")
+        ProfileOutlinedTextField(value = history , onValueChange = { history = it }, placeholder = "대표자 약력")
         Spacer(modifier = Modifier.height(12.dp))
         ProfileOutlinedTextField(value = employeeCount , onValueChange = { employeeCount = it }, placeholder = "고용 인원")
         Spacer(modifier = Modifier.height(12.dp))
@@ -195,13 +195,25 @@ fun StartupCreateProfileScreen(
         Spacer(modifier = Modifier.height(12.dp))
         ProfileOutlinedTextField(value = profit, onValueChange = { profit = it }, placeholder = "영업이익")
         Spacer(modifier = Modifier.height(12.dp))
-        ProfileExposedDropdown(
-            label = "투자 단계",
-            selected = investorStage,
-            options = FUNDING_STAGE,
-            onSelect = { investorStage = it },
-            modifier = Modifier.weight(1f)
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ProfileExposedDropdown(
+                label = "투자 단계",
+                selected = investorStage,
+                options = FUNDING_STAGE,
+                onSelect = { investorStage = it },
+                modifier = Modifier.weight(1f)
+            )
+            ProfileExposedDropdown(
+                label = "투자 단계",
+                selected = investorStage,
+                options = FUNDING_STAGE,
+                onSelect = { investorStage = it },
+                modifier = Modifier.weight(1f)
+            )
+        }
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
@@ -213,7 +225,7 @@ fun StartupCreateProfileScreen(
                         scale = scale,
                         businessNumber = businessNumber,
                         representativeName = representativeName,
-                        representativeBio = representativeBio,
+                        history = history,
                         address = address,
                         homepageUrl = homepageUrl,
                         contactEmail = contactEmail,
@@ -245,7 +257,7 @@ fun StartupCreateProfileScreen(
                         foundingDate.isNotBlank() &&
                         businessNumber.isNotBlank() &&
                         representativeName.isNotBlank() &&
-                        representativeBio.isNotBlank() &&
+                        history.isNotBlank() &&
                         address.isNotBlank() &&
                         homepageUrl.isNotBlank() &&
                         contactEmail.isNotBlank() &&

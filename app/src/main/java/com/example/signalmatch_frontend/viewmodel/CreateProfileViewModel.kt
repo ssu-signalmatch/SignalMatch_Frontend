@@ -3,18 +3,23 @@ package com.example.signalmatch_frontend.viewmodel
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.signalmatch_frontend.data.model.Request.InvestorCreateProfileRequest
-import com.example.signalmatch_frontend.data.model.Request.StartupCreateProfileRequest
+import com.example.signalmatch_frontend.data.local.UserPreference
+import com.example.signalmatch_frontend.data.model.request.InvestorCreateProfileRequest
+import com.example.signalmatch_frontend.data.model.request.StartupCreateProfileRequest
 import com.example.signalmatch_frontend.data.repository.ProfileRepository
 import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorProfileForm
 import com.example.signalmatch_frontend.ui.startup.profilecreate.StartupProfileForm
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
+import retrofit2.HttpException
+import com.google.gson.Gson
 
 @HiltViewModel
 class CreateProfileViewModel @Inject constructor(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val userPreference: UserPreference
 ) : ViewModel() {
 
     sealed interface UiState {
@@ -47,6 +52,7 @@ class CreateProfileViewModel @Inject constructor(
                 profileRepository.investorCreateProfile(req)
             }.onSuccess { res ->
                 if (res.success && res.data != null) {
+                    userPreference.setProfileCompleted(true)
                     uiState = UiState.Success(res.data.investorId, res.message)
                 } else {
                     uiState = UiState.Error(res.message ?: "프로필 생성 실패")
@@ -63,7 +69,7 @@ class CreateProfileViewModel @Inject constructor(
 
             runCatching {
                 val req = StartupCreateProfileRequest(
-                    representativeBio = form.representativeBio, //임시
+                    history = form.history, //임시
                     startupName = form.startupName,
                     status = form.status,
                     foundingDate = form.foundingDate,
@@ -83,15 +89,28 @@ class CreateProfileViewModel @Inject constructor(
                     investorStages = form.investorStage,
                     businessAreas = form.businessAreas.toList()
                 )
+                Log.d("StartupReq", Gson().toJson(req))
                 profileRepository.startupCreateProfile(req)
+
             }.onSuccess { res ->
                 if (res.success && res.data != null) {
+                    userPreference.setProfileCompleted(true)
                     uiState = UiState.Success(res.data.startupId, res.message)
                 } else {
                     uiState = UiState.Error(res.message ?: "프로필 생성 실패")
                 }
             }.onFailure { e ->
-                uiState = UiState.Error(e.message ?: "네트워크 오류")
+                //uiState = UiState.Error(e.message ?: "네트워크 오류")
+                val errorMsg = if (e is HttpException) {
+                    val code = e.code()
+                    val errorBody = e.response()?.errorBody()?.string()
+                    "HTTP $code\n$errorBody"
+                } else {
+                    e.message ?: "알 수 없는 오류"
+                }
+
+                Log.e("StartupCreateProfile", "error = $errorMsg", e)
+                uiState = UiState.Error(errorMsg)
             }
         }
     }

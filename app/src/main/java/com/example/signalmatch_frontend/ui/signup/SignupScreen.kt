@@ -47,10 +47,8 @@ fun SignupScreen(
 
     LaunchedEffect(signupSuccess) {
         if (signupSuccess == true) {
-            if (userRole == "STARTUP") {
-                navController.navigate("startup_create_profile")
-            } else if (userRole == "INVESTOR") {
-                navController.navigate("investor_create_profile")
+            navController.navigate("login") {
+                popUpTo("signup") { inclusive = true }
             }
         }
     }
@@ -131,13 +129,6 @@ fun SignupScreen(
                 navController.navigate("login")
             }
         )
-        if (signupMessage == "회원가입이 완료되었습니다.") {
-            LaunchedEffect(Unit) {
-                navController.navigate("login") {
-                    popUpTo("signup-role") { inclusive = true }
-                }
-            }
-        }
     }
 }
 

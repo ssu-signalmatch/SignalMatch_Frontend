@@ -6,11 +6,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.*
+import com.example.signalmatch_frontend.data.local.UserPreference
 import com.example.signalmatch_frontend.data.repository.AuthRepository
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val userPreference: UserPreference
 ) : ViewModel() {
 
     var signupMessage by mutableStateOf<String?>(null)
@@ -25,6 +27,12 @@ class SignupViewModel @Inject constructor(
                 val response = repository.signup(loginId, password, name, userRole)
                 signupMessage = response.message
                 signupSuccess = response.success
+
+                if (response.success) {
+                    userPreference.saveUserRole(userRole)
+                    userPreference.setProfileCompleted(false)
+                }
+
             } catch (e: retrofit2.HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
                 if (errorBody?.contains("이미 존재하는 아이디") == true) {

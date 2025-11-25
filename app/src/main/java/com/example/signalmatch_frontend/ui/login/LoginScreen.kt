@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -35,6 +34,29 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun LoginScreen(navController: NavController,
                 viewModel: LoginViewModel = hiltViewModel()
 ){
+    val loginSuccess = viewModel.loginSuccess
+    val profileCompleted = viewModel.profileCompleted
+
+    LaunchedEffect(loginSuccess) {
+        if (loginSuccess == true) {
+            if (profileCompleted) {
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
+            } else {
+                if (viewModel.userRole == "INVESTOR") {
+                    navController.navigate("investor_create_profile") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                } else if (viewModel.userRole == "STARTUP") {
+                    navController.navigate("startup_create_profile") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,9 +64,6 @@ fun LoginScreen(navController: NavController,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ){
-
-        val context = LocalContext.current
-        val loginSuccess = viewModel.loginSuccess
 
         var loginId by remember { mutableStateOf("") }
         var loginPassword by remember { mutableStateOf("") }
@@ -86,19 +105,6 @@ fun LoginScreen(navController: NavController,
                 navController.navigate("signup")
             }
         )
-        LaunchedEffect(loginSuccess) {
-            when (loginSuccess) {
-                true -> {
-                    navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                }
-                false -> {
-                    Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
-                }
-                null -> { }
-            }
-        }
     }
 }
 

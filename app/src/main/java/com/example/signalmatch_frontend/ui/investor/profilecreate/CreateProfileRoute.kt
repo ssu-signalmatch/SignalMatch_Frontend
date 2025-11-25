@@ -27,7 +27,7 @@ fun InvestorCreateProfileRoute(
         when (uiState) {
             is CreateProfileViewModel.UiState.Success -> {
                 navController.navigate("home") {
-                    popUpTo("success") { inclusive = true }
+                    popUpTo("investor_create_profile") { inclusive = true }
                 }
             }
             is CreateProfileViewModel.UiState.Error -> {
