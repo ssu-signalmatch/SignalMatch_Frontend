@@ -22,11 +22,12 @@ fun StartupCreateProfileRoute(
     val uiState = viewModel.uiState
     val context = LocalContext.current
 
+
     LaunchedEffect(uiState) {
         when (uiState) {
             is CreateProfileViewModel.UiState.Success -> {
                 navController.navigate("home") {
-                    popUpTo("startup_create") { inclusive = true }
+                    popUpTo("startup_create_profile") { inclusive = true }
                 }
             }
 

@@ -1,11 +1,15 @@
 package com.example.signalmatch_frontend.di
 
 import com.example.signalmatch_frontend.data.api.AuthApi
+import com.example.signalmatch_frontend.data.api.AuthInterceptor
+import com.example.signalmatch_frontend.data.api.BookmarkApi
+import com.example.signalmatch_frontend.data.api.MatchApi
 import com.example.signalmatch_frontend.data.api.ProfileApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import javax.inject.Singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,9 +20,21 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit =
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor
+    ): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(
+        okHttpClient: OkHttpClient
+    ): Retrofit =
         Retrofit.Builder()
             .baseUrl("http://signalmatch.shop/")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -31,6 +47,18 @@ object NetworkModule {
     @Singleton
     fun provideProfileApi(retrofit: Retrofit): ProfileApi {
         return retrofit.create(ProfileApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookmarkApi(retrofit: Retrofit): BookmarkApi {
+        return retrofit.create(BookmarkApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMatchApi(retrofit: Retrofit): MatchApi {
+        return retrofit.create(MatchApi::class.java)
     }
 
 }

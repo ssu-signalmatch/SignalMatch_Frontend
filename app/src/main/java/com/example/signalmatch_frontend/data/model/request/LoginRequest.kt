@@ -1,4 +1,4 @@
-package com.example.signalmatch_frontend.data.model.Request
+package com.example.signalmatch_frontend.data.model.request
 
 data class LoginRequest(
     val loginId: String,

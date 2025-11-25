@@ -1,10 +1,11 @@
 package com.example.signalmatch_frontend.data.repository
 
 import com.example.signalmatch_frontend.data.api.AuthApi
-import com.example.signalmatch_frontend.data.model.Request.LoginRequest
-import com.example.signalmatch_frontend.data.model.Request.SignupRequest
-import com.example.signalmatch_frontend.data.model.Response.LoginResponse
-import com.example.signalmatch_frontend.data.model.Response.SignupResponse
+import com.example.signalmatch_frontend.data.model.request.LoginRequest
+import com.example.signalmatch_frontend.data.model.request.SignupRequest
+import com.example.signalmatch_frontend.data.model.response.LoginResponse
+import com.example.signalmatch_frontend.data.model.response.SignoutResponse
+import com.example.signalmatch_frontend.data.model.response.SignupResponse
 import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
@@ -21,5 +22,9 @@ class AuthRepository @Inject constructor(
         userRole: String
     ): SignupResponse {
         return api.signup(SignupRequest(loginId, password, name, userRole))
+    }
+
+    suspend fun signout(): SignoutResponse {
+        return api.signout()
     }
 }

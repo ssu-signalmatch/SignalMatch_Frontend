@@ -1,12 +1,12 @@
-package com.example.signalmatch_frontend.data.model.Request
+package com.example.signalmatch_frontend.data.model.request
 
 data class InvestorCreateProfileRequest(
     val investorName: String,
-    val phoneNumber: String,
     val contactEmail: String,
-    val organizationName: String,
+    val phoneNumber: String,
     val websiteUrl: String,
     val intro: String,
+    val organizationName: String,
     val investorType: String,
     val preferredInvestmentSize: String,
     val preferredStages: List<String>,
