@@ -1,0 +1,441 @@
+package com.example.signalmatch_frontend.ui.search
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.signalmatch_frontend.R
+import com.example.signalmatch_frontend.ui.components.button.SearchButton
+import com.example.signalmatch_frontend.ui.components.card.SearchCard1
+import com.example.signalmatch_frontend.ui.components.card.SearchCard2
+import com.example.signalmatch_frontend.ui.components.card.SearchCard3
+import com.example.signalmatch_frontend.viewmodel.SearchViewModel
+
+@Composable
+fun SearchScreen(
+    navController: NavController,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
+    val scrollState = rememberScrollState()
+
+    val query = viewModel.query
+    val startups = viewModel.startups
+    val investors = viewModel.investors
+    val isLoading = viewModel.isLoading
+    val selectedAreas = viewModel.selectedAreas
+
+    val hasResult = startups.isNotEmpty() || investors.isNotEmpty()
+
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(scrollState)
+                .background(Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            Spacer(Modifier.height(70.dp))
+
+            OutlinedTextField(
+                value = query,
+                onValueChange = { viewModel.onQueryChange(it) },
+                modifier = Modifier
+                    .height(60.dp)
+                    .width(349.dp),
+                singleLine = true,
+                shape = RoundedCornerShape(20.dp),
+                placeholder = {
+                    Text(
+                        "검색",
+                        fontSize = 17.sp,
+                        lineHeight = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFFD9D9D9)
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "검색",
+                        tint = Color(0xFFADF1EB)
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color(0xFFAEF1EB),
+                    unfocusedIndicatorColor = Color(0xFFAEF1EB),
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    cursorColor = Color.Black
+                ),
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
+                keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                    onSearch = {
+                        viewModel.onSearch()
+                    }
+                )
+            )
+
+            Spacer(Modifier.height(22.dp))
+
+            Row {
+                SearchButton(
+                    category = "AGRICULTURE_\nFORESTRY_FISHING",
+                    fontsize = 9,
+                    selected = selectedAreas.contains("AGRICULTURE_FORESTRY_FISHING"),
+                    onClick = {
+                        viewModel.toggleArea("AGRICULTURE_FORESTRY_FISHING")
+                        viewModel.onSearch()
+                    }
+                )
+                Spacer(Modifier.width(6.dp))
+                SearchButton(
+                    category = "MINING",
+                    fontsize = 9,
+                    selected = selectedAreas.contains("MINING"),
+                    onClick = {
+                        viewModel.toggleArea("MINING")
+                        viewModel.onSearch()
+                    }
+                )
+                Spacer(Modifier.width(6.dp))
+                SearchButton(
+                    category = "MANUFACTURING",
+                    fontsize = 9,
+                    selected = selectedAreas.contains("MANUFACTURING"),
+                    onClick = {
+                        viewModel.toggleArea("MANUFACTURING")
+                        viewModel.onSearch()
+                    }
+                )
+                Spacer(Modifier.width(6.dp))
+                SearchButton(
+                    category = "ELECTRICITY_\nGAS_STEAM_AC",
+                    fontsize = 9,
+                    selected = selectedAreas.contains("ELECTRICITY_GAS_STEAM_AC"),
+                    onClick = {
+                        viewModel.toggleArea("ELECTRICITY_GAS_STEAM_AC")
+                        viewModel.onSearch()
+                    }
+                )
+            }
+
+                Spacer(Modifier.height(5.dp))
+
+                Row {
+                    SearchButton(
+                        category = "WATER_SEWAGE_WASTE",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("WATER_SEWAGE_WASTE"),
+                        onClick = {
+                            viewModel.toggleArea("WATER_SEWAGE_WASTE")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "CONSTRUCTION",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("CONSTRUCTION"),
+                        onClick = {
+                            viewModel.toggleArea("CONSTRUCTION")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "WHOLESALE_RETAIL",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("WHOLESALE_RETAIL"),
+                        onClick = {
+                            viewModel.toggleArea("WHOLESALE_RETAIL")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "TRANSPORTATION_\nWAREHOUSING",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("TRANSPORTATION_WAREHOUSING"),
+                        onClick = {
+                            viewModel.toggleArea("TRANSPORTATION_WAREHOUSING")
+                            viewModel.onSearch()
+                        }
+                    )
+                }
+
+                Spacer(Modifier.height(5.dp))
+
+                Row {
+                    SearchButton(
+                        category = "ACCOMMODATION_\nFOOD",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("ACCOMMODATION_FOOD"),
+                        onClick = {
+                            viewModel.toggleArea("ACCOMMODATION_FOOD")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "INFORMATION_\nCOMMUNICATION",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("INFORMATION_COMMUNICATION"),
+                        onClick = {
+                            viewModel.toggleArea("INFORMATION_COMMUNICATION")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "FINANCE_INSURANCE",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("FINANCE_INSURANCE"),
+                        onClick = {
+                            viewModel.toggleArea("FINANCE_INSURANCE")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "REAL_ESTATE",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("REAL_ESTATE"),
+                        onClick = {
+                            viewModel.toggleArea("REAL_ESTATE")
+                            viewModel.onSearch()
+                        }
+                    )
+                }
+
+                Spacer(Modifier.height(5.dp))
+
+                Row {
+                    SearchButton(
+                        category = "PROFESSIONAL_\nSCIENTIFIC_TECH",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("PROFESSIONAL_SCIENTIFIC_TECH"),
+                        onClick = {
+                            viewModel.toggleArea("PROFESSIONAL_SCIENTIFIC_TECH")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "BUSINESS_\nSUPPORT_RENTAL",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("BUSINESS_SUPPORT_RENTAL"),
+                        onClick = {
+                            viewModel.toggleArea("BUSINESS_SUPPORT_RENTAL")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "PUBLIC_ADMIN_DEFENSE",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("PUBLIC_ADMIN_DEFENSE"),
+                        onClick = {
+                            viewModel.toggleArea("PUBLIC_ADMIN_DEFENSE")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "EDUCATION",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("EDUCATION"),
+                        onClick = {
+                            viewModel.toggleArea("EDUCATION")
+                            viewModel.onSearch()
+                        }
+                    )
+                }
+
+                Spacer(Modifier.height(5.dp))
+
+                Row {
+                    SearchButton(
+                        category = "HEALTH_SOCIAL_\nWORK",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("HEALTH_SOCIAL_WORK"),
+                        onClick = {
+                            viewModel.toggleArea("HEALTH_SOCIAL_WORK")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "ARTS_SPORTS_\nRECREATION",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("ARTS_SPORTS_RECREATION"),
+                        onClick = {
+                            viewModel.toggleArea("ARTS_SPORTS_RECREATION")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "ASSOCIATIONS_\nREPAIR_PERSONAL",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("ASSOCIATIONS_REPAIR_PERSONAL"),
+                        onClick = {
+                            viewModel.toggleArea("ASSOCIATIONS_REPAIR_PERSONAL")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "HOUSEHOLD_EMPLOYMENT",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("HOUSEHOLD_EMPLOYMENT"),
+                        onClick = {
+                            viewModel.toggleArea("HOUSEHOLD_EMPLOYMENT")
+                            viewModel.onSearch()
+                        }
+                    )
+                }
+
+            Spacer(Modifier.height(44.dp))
+
+            when {
+                isLoading -> {
+                    // 로딩 중
+                    CircularProgressIndicator()
+                    Spacer(Modifier.height(16.dp))
+                }
+
+                hasResult -> {
+                    // 검색 결과가 있을 때: 랭킹 지우고 결과 카드만 표시
+                    Text(
+                        text = "검색 결과",
+                        fontSize = 10.sp,
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp)
+                    )
+                    Spacer(Modifier.height(16.dp))
+
+                    // 1) 스타트업 결과
+                    Text("START-UP",
+                        fontSize = 16.sp,
+                        color = Color.Gray
+                    )
+                    startups.forEach { startup ->
+                        val category =
+                            if (startup.businessAreas.isNotEmpty())
+                                startup.businessAreas.joinToString(", ")
+                            else
+                                startup.investorStages
+
+                            SearchCard3(
+                                navController = navController,
+                                name = startup.startupName,
+                                category = category,
+                                saveCount = 0
+                            )
+                        Spacer(Modifier.height(17.dp))
+                    }
+
+                    // 2) 투자자 결과
+                    Text("INVESTOR",
+                        fontSize = 16.sp,
+                        color = Color.Gray
+                    )
+                    investors.forEach { investor ->
+                        val category =
+                            if (investor.preferredAreas.isNotEmpty())
+                                investor.preferredAreas.joinToString(", ")
+                            else
+                                investor.investorType
+
+                            SearchCard3(
+                                navController = navController,
+                                name = investor.investorName,
+                                category = category,
+                                saveCount = 0
+                            )
+                        Spacer(Modifier.height(17.dp))
+                    }
+                }
+
+                else -> {
+                    // 🔔 검색 전/결과 없을 때: 이달의 랭킹 보여주기
+                    Text(
+                        "이달의 랭킹🎖",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.offset(x = (-101).dp)
+                    )
+
+                    Spacer(Modifier.height(16.dp))
+
+                    SearchCard1(navController, R.drawable.ic_1st, "코끼리 연구소 1", "핀테크", 255)
+                    Spacer(Modifier.height(17.dp))
+                    SearchCard1(navController, R.drawable.ic_2nd, "코끼리 연구소 2", "B2B SaaS & 데이터", 204)
+                    Spacer(Modifier.height(17.dp))
+                    SearchCard1(navController, R.drawable.ic_3rd, "코끼리 연구소 3", "푸드테크 & 커머스", 4)
+                    Spacer(Modifier.height(17.dp))
+                    SearchCard2(navController, "4", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                    Spacer(Modifier.height(17.dp))
+                    SearchCard2(navController, "5", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                    Spacer(Modifier.height(17.dp))
+                    SearchCard2(navController, "6", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                    Spacer(Modifier.height(17.dp))
+                    SearchCard2(navController, "7", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                    Spacer(Modifier.height(17.dp))
+                    SearchCard2(navController, "8", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                    Spacer(Modifier.height(17.dp))
+                    SearchCard2(navController, "9", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                    Spacer(Modifier.height(17.dp))
+                    SearchCard2(navController, "10", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+
+
+
+@Preview
+@Composable
+fun SearchPreview(){
+    val navController = rememberNavController()
+    SearchScreen(navController)
+}

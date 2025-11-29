@@ -5,6 +5,7 @@ import com.example.signalmatch_frontend.data.api.AuthInterceptor
 import com.example.signalmatch_frontend.data.api.BookmarkApi
 import com.example.signalmatch_frontend.data.api.MatchApi
 import com.example.signalmatch_frontend.data.api.ProfileApi
+import com.example.signalmatch_frontend.data.api.SearchApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,10 +14,15 @@ import okhttp3.OkHttpClient
 import javax.inject.Singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.logging.HttpLoggingInterceptor
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    val logging = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
 
     @Provides
     @Singleton
@@ -25,6 +31,7 @@ object NetworkModule {
     ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
+            .addInterceptor(logging)
             .build()
 
     @Provides
@@ -61,4 +68,8 @@ object NetworkModule {
         return retrofit.create(MatchApi::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideSearchApi(retrofit: Retrofit): SearchApi =
+        retrofit.create(SearchApi::class.java)
 }
