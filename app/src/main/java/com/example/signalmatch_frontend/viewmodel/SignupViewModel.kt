@@ -6,13 +6,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.*
-import com.example.signalmatch_frontend.data.local.UserPreference
 import com.example.signalmatch_frontend.data.repository.AuthRepository
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
-    private val repository: AuthRepository,
-    private val userPreference: UserPreference
+    private val repository: AuthRepository
 ) : ViewModel() {
 
     var signupMessage by mutableStateOf<String?>(null)
@@ -29,8 +27,6 @@ class SignupViewModel @Inject constructor(
                 signupSuccess = response.success
 
                 if (response.success) {
-                    userPreference.saveUserRole(userRole)
-                    userPreference.setProfileCompleted(false)
                 }
 
             } catch (e: retrofit2.HttpException) {
