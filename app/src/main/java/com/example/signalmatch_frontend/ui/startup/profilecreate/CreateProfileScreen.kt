@@ -172,7 +172,7 @@ fun StartupCreateProfileScreen(
         }
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text("팀 및 구성원 정보",
+        Text("투자 정보",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )

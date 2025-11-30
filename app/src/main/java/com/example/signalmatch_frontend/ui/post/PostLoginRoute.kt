@@ -29,26 +29,26 @@ fun PostLoginRoute(
     LaunchedEffect(uiState) {
         when (uiState) {
             PostLoginViewModel.UiState.GoHome -> {
-                navController.navigate("home") {
-                    popUpTo("post-login/{userId}/{userRole}") { inclusive = true }
+                navController.navigate("home/$userId") {
+                    popUpTo("post-login/$userId/$userRole") { inclusive = true }
                 }
             }
 
             PostLoginViewModel.UiState.GoInvestorCreateProfile -> {
-                navController.navigate("investor-create profile") {
-                    popUpTo("post-login/{userId}/{userRole}") { inclusive = true }
+                navController.navigate("investor-create profile/$userId") {
+                    popUpTo("post-login/$userId/$userRole") { inclusive = true }
                 }
             }
 
             PostLoginViewModel.UiState.GoStartupCreateProfile -> {
-                navController.navigate("startup-create profile") {
-                    popUpTo("post-login/{userId}/{userRole}") { inclusive = true }
+                navController.navigate("startup-create profile/$userId") {
+                    popUpTo("post-login/$userId/$userRole") { inclusive = true }
                 }
             }
 
             is PostLoginViewModel.UiState.Error -> {
                 navController.navigate("login") {
-                    popUpTo("post-login/{userId}/{userRole}") { inclusive = true }
+                    popUpTo("post-login/$userId/$userRole") { inclusive = true }
                 }
             }
 

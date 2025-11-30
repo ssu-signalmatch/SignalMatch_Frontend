@@ -1,5 +1,6 @@
 package com.example.signalmatch_frontend.ui.home
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.signalmatch_frontend.ui.components.etc.Logo
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
@@ -20,11 +19,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.example.signalmatch_frontend.ui.components.TabBar
+import com.example.signalmatch_frontend.viewmodel.MypageEntryViewModel
+import androidx.compose.ui.platform.LocalContext
+
 
 private enum class Tab { Recommend, News }
 
@@ -33,7 +39,6 @@ fun HomeCard(
     modifier: Modifier = Modifier
 ) {
     var selected by remember { mutableStateOf(Tab.Recommend) }
-
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -121,24 +126,51 @@ private fun RecentNewsContent() {
 }
 
 @Composable
-fun HomeScreen(navController: NavController){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ){
-        Spacer(modifier = Modifier.height(90.dp))
-        Logo(126.dp)
-        Spacer(modifier = Modifier.height(14.dp))
-        HomeCard()
+fun HomeScreen(
+    navController: NavHostController,
+    userId: Int,
+    mypageViewModel: MypageEntryViewModel = hiltViewModel()
+) {
+
+    val context = LocalContext.current
+
+    Scaffold(
+        bottomBar = {
+            TabBar(
+                navController = navController,
+                userId = userId,
+                onMypageClick = {
+                    mypageViewModel.openMypage(
+                        navController = navController,
+                        userId = userId,
+                        onError = { msg ->
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            )
+        },
+        containerColor = Color.White
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            Spacer(modifier = Modifier.height(90.dp))
+            Logo(126.dp)
+            Spacer(modifier = Modifier.height(14.dp))
+            HomeCard()
+        }
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 fun HomePreview(){
     val navController = rememberNavController()
     HomeScreen(navController = navController)
-}
+}*/

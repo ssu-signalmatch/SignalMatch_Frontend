@@ -9,13 +9,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.signalmatch_frontend.R
 
 @Composable
-fun TabBar(navController: NavHostController) {
+fun TabBar(
+    navController: NavController,
+    userId: Int,
+    onMypageClick: () -> Unit
+) {
     val tabs = listOf(
         "home" to R.drawable.ic_home,
         "search" to R.drawable.ic_search,
@@ -24,28 +28,38 @@ fun TabBar(navController: NavHostController) {
         "mypage" to R.drawable.ic_mypage
     )
 
-    val backStack by navController.currentBackStackEntryAsState()
-    val currentRoute = backStack?.destination?.route
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
 
     Surface(
         color = Color(0xFFAEF1EB),
         modifier = Modifier
-            .fillMaxWidth()
             .height(102.dp)
+            .fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             tabs.forEach { (route, iconRes) ->
-                val selected = currentRoute == route
+
+                // 👇 탭별 실제 네비게이션 route 결정
+                val navigateRoute = when (route) {
+                    "home"     -> "home/$userId"
+                    "search"   -> "search/$userId"
+                    "matching" -> "matching/$userId"
+                    else       -> route
+                }
+
+                val selected = currentRoute == navigateRoute
+
                 IconButton(
                     onClick = {
-                        if (!selected) {
-                            navController.navigate(route) {
+                        if (route == "mypage") {
+                            onMypageClick()
+                        } else if (!selected) {
+                            navController.navigate(navigateRoute) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }

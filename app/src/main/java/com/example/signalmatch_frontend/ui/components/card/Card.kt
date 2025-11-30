@@ -1,5 +1,6 @@
 package com.example.signalmatch_frontend.ui.components.card
 
+import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.signalmatch_frontend.R
 import coil.compose.AsyncImage
+import com.example.signalmatch_frontend.ui.components.image.ProfileImage
 
 
 @Composable
@@ -193,19 +195,23 @@ fun MypageCard3(
     }
 }
 
+
 @Composable
 fun StartupProfileCard(
     navController: NavController,
-    model: String,
+    model: String?,
     name: String,
     category: String,
     round: String,
-    checkedInvestor: Int
+    userId: Int
 ) {
     Card(
         modifier = Modifier
             .width(349.dp)
-            .height(146.dp),
+            .height(146.dp)
+            .clickable {
+                navController.navigate("startup-profile detail/$userId")
+            },
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFAFAFA)
         )
@@ -219,13 +225,8 @@ fun StartupProfileCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = model,
-                    contentDescription = "프로필 이미지",
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(20.dp)),
-                    contentScale = ContentScale.Crop
+                ProfileImage(
+                    imageUri = model?.let { Uri.parse(it) }
                 )
                 Spacer(modifier = Modifier.width(30.dp))
                 Column() {
@@ -261,17 +262,6 @@ fun StartupProfileCard(
 
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Text("최근 7일 동안 투자자 ${checkedInvestor}명 내 프로필을 확인했습니다",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF848484))
-            }
         }
     }
 }
@@ -280,15 +270,19 @@ fun StartupProfileCard(
 @Composable
 fun InvestorProfileCard(
     navController: NavController,
-    model: String,
+    model: String?,
     name: String,
     role: String,
-    matchedStartups: Int,
+    userId: Int
+
 ) {
     Card(
         modifier = Modifier
             .width(349.dp)
-            .height(146.dp),
+            .height(146.dp)
+            .clickable {
+                navController.navigate("investor-profile detail/$userId")
+            },
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFAFAFA)
         ),
@@ -303,15 +297,9 @@ fun InvestorProfileCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = model,
-                    contentDescription = "프로필 이미지",
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Crop
+                ProfileImage(
+                    imageUri = model?.let { Uri.parse(it) }
                 )
-
                 Spacer(modifier = Modifier.width(30.dp))
 
                 Column {
@@ -329,22 +317,6 @@ fun InvestorProfileCard(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Text(
-                    text = "현재 ${matchedStartups}개의 스타트업과 매칭 되었습니다",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF848484)
-                )
-            }
-
         }
 
     }

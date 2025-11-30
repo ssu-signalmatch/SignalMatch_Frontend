@@ -1,5 +1,6 @@
 package com.example.signalmatch_frontend.ui.search
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.TextFieldDefaults
@@ -20,31 +21,39 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.signalmatch_frontend.R
+import com.example.signalmatch_frontend.ui.components.TabBar
 import com.example.signalmatch_frontend.ui.components.button.SearchButton
 import com.example.signalmatch_frontend.ui.components.card.SearchCard1
 import com.example.signalmatch_frontend.ui.components.card.SearchCard2
 import com.example.signalmatch_frontend.ui.components.card.SearchCard3
+import com.example.signalmatch_frontend.viewmodel.MypageEntryViewModel
 import com.example.signalmatch_frontend.viewmodel.SearchViewModel
 
 @Composable
 fun SearchScreen(
-    navController: NavController,
-    viewModel: SearchViewModel = hiltViewModel()
+    navController: NavHostController,
+    userId: Int,
+    viewModel: SearchViewModel = hiltViewModel(),
+    mypageViewModel: MypageEntryViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     val query = viewModel.query
     val startups = viewModel.startups
@@ -54,103 +63,122 @@ fun SearchScreen(
 
     val hasResult = startups.isNotEmpty() || investors.isNotEmpty()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .verticalScroll(scrollState)
-                .background(Color.White),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Spacer(Modifier.height(70.dp))
-
-            OutlinedTextField(
-                value = query,
-                onValueChange = { viewModel.onQueryChange(it) },
-                modifier = Modifier
-                    .height(60.dp)
-                    .width(349.dp),
-                singleLine = true,
-                shape = RoundedCornerShape(20.dp),
-                placeholder = {
-                    Text(
-                        "검색",
-                        fontSize = 17.sp,
-                        lineHeight = 17.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFFD9D9D9)
+    Scaffold(
+        bottomBar = {
+            TabBar(
+                navController = navController,
+                userId = userId,
+                onMypageClick = {
+                    mypageViewModel.openMypage(
+                        navController = navController,
+                        userId = userId,
+                        onError = { msg ->
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        }
                     )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "검색",
-                        tint = Color(0xFFADF1EB)
-                    )
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color(0xFFAEF1EB),
-                    unfocusedIndicatorColor = Color(0xFFAEF1EB),
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
-                    cursorColor = Color.Black
-                ),
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
-                keyboardActions = androidx.compose.foundation.text.KeyboardActions(
-                    onSearch = {
-                        viewModel.onSearch()
-                    }
-                )
+                }
             )
+        },
+        containerColor = Color.White
+    ) { innerPadding ->
+        Column(modifier = Modifier.fillMaxSize()) {
 
-            Spacer(Modifier.height(22.dp))
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .padding(innerPadding)
+                    .background(Color.White),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Spacer(Modifier.height(70.dp))
 
-            Row {
-                SearchButton(
-                    category = "AGRICULTURE_\nFORESTRY_FISHING",
-                    fontsize = 9,
-                    selected = selectedAreas.contains("AGRICULTURE_FORESTRY_FISHING"),
-                    onClick = {
-                        viewModel.toggleArea("AGRICULTURE_FORESTRY_FISHING")
-                        viewModel.onSearch()
-                    }
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { viewModel.onQueryChange(it) },
+                    modifier = Modifier
+                        .height(60.dp)
+                        .width(349.dp),
+                    singleLine = true,
+                    shape = RoundedCornerShape(20.dp),
+                    placeholder = {
+                        Text(
+                            "검색",
+                            fontSize = 17.sp,
+                            lineHeight = 17.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFFD9D9D9)
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "검색",
+                            tint = Color(0xFFADF1EB)
+                        )
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFFAEF1EB),
+                        unfocusedIndicatorColor = Color(0xFFAEF1EB),
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        cursorColor = Color.Black
+                    ),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
+                    keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                        onSearch = {
+                            viewModel.onSearch()
+                        }
+                    )
                 )
-                Spacer(Modifier.width(6.dp))
-                SearchButton(
-                    category = "MINING",
-                    fontsize = 9,
-                    selected = selectedAreas.contains("MINING"),
-                    onClick = {
-                        viewModel.toggleArea("MINING")
-                        viewModel.onSearch()
-                    }
-                )
-                Spacer(Modifier.width(6.dp))
-                SearchButton(
-                    category = "MANUFACTURING",
-                    fontsize = 9,
-                    selected = selectedAreas.contains("MANUFACTURING"),
-                    onClick = {
-                        viewModel.toggleArea("MANUFACTURING")
-                        viewModel.onSearch()
-                    }
-                )
-                Spacer(Modifier.width(6.dp))
-                SearchButton(
-                    category = "ELECTRICITY_\nGAS_STEAM_AC",
-                    fontsize = 9,
-                    selected = selectedAreas.contains("ELECTRICITY_GAS_STEAM_AC"),
-                    onClick = {
-                        viewModel.toggleArea("ELECTRICITY_GAS_STEAM_AC")
-                        viewModel.onSearch()
-                    }
-                )
-            }
+
+                Spacer(Modifier.height(22.dp))
+
+                Row {
+                    SearchButton(
+                        category = "AGRICULTURE_\nFORESTRY_FISHING",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("AGRICULTURE_FORESTRY_FISHING"),
+                        onClick = {
+                            viewModel.toggleArea("AGRICULTURE_FORESTRY_FISHING")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "MINING",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("MINING"),
+                        onClick = {
+                            viewModel.toggleArea("MINING")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "MANUFACTURING",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("MANUFACTURING"),
+                        onClick = {
+                            viewModel.toggleArea("MANUFACTURING")
+                            viewModel.onSearch()
+                        }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    SearchButton(
+                        category = "ELECTRICITY_\nGAS_STEAM_AC",
+                        fontsize = 9,
+                        selected = selectedAreas.contains("ELECTRICITY_GAS_STEAM_AC"),
+                        onClick = {
+                            viewModel.toggleArea("ELECTRICITY_GAS_STEAM_AC")
+                            viewModel.onSearch()
+                        }
+                    )
+                }
 
                 Spacer(Modifier.height(5.dp))
 
@@ -328,38 +356,39 @@ fun SearchScreen(
                     )
                 }
 
-            Spacer(Modifier.height(44.dp))
+                Spacer(Modifier.height(44.dp))
 
-            when {
-                isLoading -> {
-                    // 로딩 중
-                    CircularProgressIndicator()
-                    Spacer(Modifier.height(16.dp))
-                }
+                when {
+                    isLoading -> {
+                        // 로딩 중
+                        CircularProgressIndicator()
+                        Spacer(Modifier.height(16.dp))
+                    }
 
-                hasResult -> {
-                    // 검색 결과가 있을 때: 랭킹 지우고 결과 카드만 표시
-                    Text(
-                        text = "검색 결과",
-                        fontSize = 10.sp,
-                        color = Color.Gray,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp)
-                    )
-                    Spacer(Modifier.height(16.dp))
+                    hasResult -> {
+                        // 검색 결과가 있을 때: 랭킹 지우고 결과 카드만 표시
+                        Text(
+                            text = "검색 결과",
+                            fontSize = 10.sp,
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 24.dp)
+                        )
+                        Spacer(Modifier.height(16.dp))
 
-                    // 1) 스타트업 결과
-                    Text("START-UP",
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
-                    startups.forEach { startup ->
-                        val category =
-                            if (startup.businessAreas.isNotEmpty())
-                                startup.businessAreas.joinToString(", ")
-                            else
-                                startup.investorStages
+                        // 1) 스타트업 결과
+                        Text(
+                            "START-UP",
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                        startups.forEach { startup ->
+                            val category =
+                                if (startup.businessAreas.isNotEmpty())
+                                    startup.businessAreas.joinToString(", ")
+                                else
+                                    startup.investorStages
 
                             SearchCard3(
                                 navController = navController,
@@ -367,20 +396,21 @@ fun SearchScreen(
                                 category = category,
                                 saveCount = 0
                             )
-                        Spacer(Modifier.height(17.dp))
-                    }
+                            Spacer(Modifier.height(17.dp))
+                        }
 
-                    // 2) 투자자 결과
-                    Text("INVESTOR",
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
-                    investors.forEach { investor ->
-                        val category =
-                            if (investor.preferredAreas.isNotEmpty())
-                                investor.preferredAreas.joinToString(", ")
-                            else
-                                investor.investorType
+                        // 2) 투자자 결과
+                        Text(
+                            "INVESTOR",
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                        investors.forEach { investor ->
+                            val category =
+                                if (investor.preferredAreas.isNotEmpty())
+                                    investor.preferredAreas.joinToString(", ")
+                                else
+                                    investor.investorType
 
                             SearchCard3(
                                 navController = navController,
@@ -388,44 +418,51 @@ fun SearchScreen(
                                 category = category,
                                 saveCount = 0
                             )
+                            Spacer(Modifier.height(17.dp))
+                        }
+                    }
+
+                    else -> {
+                        // 🔔 검색 전/결과 없을 때: 이달의 랭킹 보여주기
+                        Text(
+                            "이달의 랭킹🎖",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.offset(x = (-101).dp)
+                        )
+
+                        Spacer(Modifier.height(16.dp))
+
+                        SearchCard1(navController, R.drawable.ic_1st, "코끼리 연구소 1", "핀테크", 255)
                         Spacer(Modifier.height(17.dp))
+                        SearchCard1(
+                            navController,
+                            R.drawable.ic_2nd,
+                            "코끼리 연구소 2",
+                            "B2B SaaS & 데이터",
+                            204
+                        )
+                        Spacer(Modifier.height(17.dp))
+                        SearchCard1(navController, R.drawable.ic_3rd, "코끼리 연구소 3", "푸드테크 & 커머스", 4)
+                        Spacer(Modifier.height(17.dp))
+                        SearchCard2(navController, "4", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                        Spacer(Modifier.height(17.dp))
+                        SearchCard2(navController, "5", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                        Spacer(Modifier.height(17.dp))
+                        SearchCard2(navController, "6", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                        Spacer(Modifier.height(17.dp))
+                        SearchCard2(navController, "7", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                        Spacer(Modifier.height(17.dp))
+                        SearchCard2(navController, "8", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                        Spacer(Modifier.height(17.dp))
+                        SearchCard2(navController, "9", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                        Spacer(Modifier.height(17.dp))
+                        SearchCard2(navController, "10", "코끼리 연구소 4", "클린테크 & 에너지", 4)
                     }
                 }
 
-                else -> {
-                    // 🔔 검색 전/결과 없을 때: 이달의 랭킹 보여주기
-                    Text(
-                        "이달의 랭킹🎖",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.offset(x = (-101).dp)
-                    )
-
-                    Spacer(Modifier.height(16.dp))
-
-                    SearchCard1(navController, R.drawable.ic_1st, "코끼리 연구소 1", "핀테크", 255)
-                    Spacer(Modifier.height(17.dp))
-                    SearchCard1(navController, R.drawable.ic_2nd, "코끼리 연구소 2", "B2B SaaS & 데이터", 204)
-                    Spacer(Modifier.height(17.dp))
-                    SearchCard1(navController, R.drawable.ic_3rd, "코끼리 연구소 3", "푸드테크 & 커머스", 4)
-                    Spacer(Modifier.height(17.dp))
-                    SearchCard2(navController, "4", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                    Spacer(Modifier.height(17.dp))
-                    SearchCard2(navController, "5", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                    Spacer(Modifier.height(17.dp))
-                    SearchCard2(navController, "6", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                    Spacer(Modifier.height(17.dp))
-                    SearchCard2(navController, "7", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                    Spacer(Modifier.height(17.dp))
-                    SearchCard2(navController, "8", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                    Spacer(Modifier.height(17.dp))
-                    SearchCard2(navController, "9", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                    Spacer(Modifier.height(17.dp))
-                    SearchCard2(navController, "10", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                }
+                Spacer(Modifier.height(24.dp))
             }
-
-            Spacer(Modifier.height(24.dp))
         }
     }
 }
@@ -433,9 +470,9 @@ fun SearchScreen(
 
 
 
-@Preview
+/*@Preview
 @Composable
 fun SearchPreview(){
     val navController = rememberNavController()
     SearchScreen(navController)
-}
+}*/
