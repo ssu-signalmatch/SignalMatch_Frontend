@@ -15,6 +15,7 @@ import com.example.signalmatch_frontend.viewmodel.CreateProfileViewModel
 @Composable
 fun StartupCreateProfileRoute(
     navController: NavController,
+    userId: Int,
     viewModel: CreateProfileViewModel = hiltViewModel()
 ) {
     val uiState = viewModel.uiState
@@ -22,7 +23,7 @@ fun StartupCreateProfileRoute(
     LaunchedEffect(uiState) {
         when (uiState) {
             is CreateProfileViewModel.UiState.Success -> {
-                navController.navigate("home") {
+                navController.navigate("home/$userId") {
                     popUpTo("post-login") { inclusive = true }
                 }
             }
