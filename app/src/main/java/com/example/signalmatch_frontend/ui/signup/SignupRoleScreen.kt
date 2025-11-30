@@ -30,7 +30,9 @@ import com.example.signalmatch_frontend.R
 import com.example.signalmatch_frontend.ui.components.etc.Logo
 
 @Composable
-fun SignupRoleScreen(navController: NavController){
+fun SignupRoleScreen(
+    navController: NavController
+){
 
     var selectedRole by remember { mutableStateOf<String?>(null) }
 

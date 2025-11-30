@@ -3,7 +3,6 @@ package com.example.signalmatch_frontend.viewmodel
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.signalmatch_frontend.data.local.UserPreference
 import com.example.signalmatch_frontend.data.model.request.InvestorCreateProfileRequest
 import com.example.signalmatch_frontend.data.model.request.StartupCreateProfileRequest
 import com.example.signalmatch_frontend.data.repository.ProfileRepository
@@ -19,7 +18,6 @@ import com.google.gson.Gson
 @HiltViewModel
 class CreateProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
-    private val userPreference: UserPreference
 ) : ViewModel() {
 
     sealed interface UiState {
@@ -52,7 +50,6 @@ class CreateProfileViewModel @Inject constructor(
                 profileRepository.investorCreateProfile(req)
             }.onSuccess { res ->
                 if (res.success && res.data != null) {
-                    userPreference.setProfileCompleted(true)
                     uiState = UiState.Success(res.data.investorId, res.message)
                 } else {
                     uiState = UiState.Error(res.message ?: "프로필 생성 실패")
@@ -94,7 +91,6 @@ class CreateProfileViewModel @Inject constructor(
 
             }.onSuccess { res ->
                 if (res.success && res.data != null) {
-                    userPreference.setProfileCompleted(true)
                     uiState = UiState.Success(res.data.startupId, res.message)
                 } else {
                     uiState = UiState.Error(res.message ?: "프로필 생성 실패")

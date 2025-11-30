@@ -57,6 +57,7 @@ data class InvestorProfileForm(
 @Composable
 fun InvestorCreateProfileScreen(
     modifier: Modifier = Modifier,
+    //userId: Int,
     onSubmit: (InvestorProfileForm) -> Unit = {}
 ) {
     var investorName by remember { mutableStateOf("") }
@@ -196,9 +197,9 @@ fun InvestorCreateProfileScreen(
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 fun ProfilePreview(){
     InvestorCreateProfileScreen()
-}
+}*/
 

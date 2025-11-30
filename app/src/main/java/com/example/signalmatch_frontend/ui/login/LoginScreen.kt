@@ -1,7 +1,6 @@
 package com.example.signalmatch_frontend.ui.login
 
 import com.example.signalmatch_frontend.viewmodel.LoginViewModel
-import android.widget.Toast
 import com.example.signalmatch_frontend.ui.components.text.OutlinedTextField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,14 +13,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -29,31 +25,21 @@ import com.example.signalmatch_frontend.ui.components.text.NavigationText
 import com.example.signalmatch_frontend.ui.components.etc.Logo
 import androidx.hilt.navigation.compose.hiltViewModel
 
-
 @Composable
-fun LoginScreen(navController: NavController,
-                viewModel: LoginViewModel = hiltViewModel()
-){
+fun LoginScreen(
+    navController: NavController,
+    onLoginSuccess: (userId: Int, userRole: String) -> Unit,
+    viewModel: LoginViewModel = hiltViewModel()
+) {
     val loginSuccess = viewModel.loginSuccess
-    val profileCompleted = viewModel.profileCompleted
+    val loginMessage = viewModel.loginMessage
 
     LaunchedEffect(loginSuccess) {
-        if (loginSuccess == true) {
-            if (profileCompleted) {
-                navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
-                }
-            } else {
-                if (viewModel.userRole == "INVESTOR") {
-                    navController.navigate("investor_create_profile") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                } else if (viewModel.userRole == "STARTUP") {
-                    navController.navigate("startup_create_profile") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                }
-            }
+        if (loginSuccess == true &&
+            viewModel.userId != null &&
+            viewModel.UserRole != null
+        ) {
+            onLoginSuccess(viewModel.userId!!, viewModel.UserRole!!)
         }
     }
 
@@ -63,7 +49,7 @@ fun LoginScreen(navController: NavController,
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
-    ){
+    ) {
 
         var loginId by remember { mutableStateOf("") }
         var loginPassword by remember { mutableStateOf("") }
@@ -88,23 +74,32 @@ fun LoginScreen(navController: NavController,
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFADF1EB),
-                contentColor = Color.White),
+                contentColor = Color.White
+            ),
             modifier = Modifier
                 .width(357.dp)
                 .height(62.dp),
             shape = RoundedCornerShape(10.dp)
-        ){
-            Text("로그인",
+        ) {
+            Text(
+                "로그인",
                 fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold)
+                fontWeight = FontWeight.SemiBold
+            )
         }
+
+        // 로그인 실패 메시지 표시
+        if (loginSuccess == false && loginMessage != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = loginMessage, color = Color.Red)
+        }
+
         NavigationText(
             question = "아직 계정이 없으신가요?",
             actionText = "회원가입",
             onActionClick = {
-                navController.navigate("signup")
+                navController.navigate("signup-role")
             }
         )
     }
 }
-

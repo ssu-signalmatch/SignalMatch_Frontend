@@ -1,49 +1,37 @@
 package com.example.signalmatch_frontend.ui.startup.profilecreate
 
-import android.widget.Toast
-import androidx.compose.foundation.background
+import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.signalmatch_frontend.viewmodel.CreateProfileViewModel
 
 @Composable
 fun StartupCreateProfileRoute(
     navController: NavController,
-    modifier: Modifier = Modifier,
     viewModel: CreateProfileViewModel = hiltViewModel()
 ) {
     val uiState = viewModel.uiState
-    val context = LocalContext.current
-
 
     LaunchedEffect(uiState) {
         when (uiState) {
             is CreateProfileViewModel.UiState.Success -> {
                 navController.navigate("home") {
-                    popUpTo("startup_create_profile") { inclusive = true }
+                    popUpTo("post-login") { inclusive = true }
                 }
             }
-
-            is CreateProfileViewModel.UiState.Error -> {
-                Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
-            }
-
             else -> Unit
         }
     }
 
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         StartupCreateProfileScreen(
-            modifier = Modifier.fillMaxSize(),
             onSubmit = { form ->
                 viewModel.submit(form)
             }
@@ -51,12 +39,24 @@ fun StartupCreateProfileRoute(
 
         if (uiState is CreateProfileViewModel.UiState.Loading) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.2f)),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
+            }
+        }
+
+        if (uiState is CreateProfileViewModel.UiState.Error) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 24.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Text(
+                    text = uiState.message,
+                    color = Color.Red
+                )
             }
         }
     }

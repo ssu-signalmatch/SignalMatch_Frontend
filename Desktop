@@ -1,0 +1,66 @@
+package com.example.signalmatch_frontend.ui.navigation
+
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.signalmatch_frontend.data.local.UserPreference
+import com.example.signalmatch_frontend.di.dataStore
+import com.example.signalmatch_frontend.ui.landing.LandingScreen
+import com.example.signalmatch_frontend.ui.login.LoginScreen
+import com.example.signalmatch_frontend.ui.home.HomeScreen
+import com.example.signalmatch_frontend.ui.investor.mypage.InvestorMypageRoute
+import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorCreateProfileRoute
+import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorCreateProfileScreen
+import com.example.signalmatch_frontend.ui.mypage.FAQScreen
+import com.example.signalmatch_frontend.ui.mypage.ManageAccountScreen
+import com.example.signalmatch_frontend.ui.mypage.bookmark_list.BookmarkRoute
+import com.example.signalmatch_frontend.ui.mypage.matching_list.MatchingListRoute
+import com.example.signalmatch_frontend.ui.signup.SignupRoleScreen
+import com.example.signalmatch_frontend.ui.signup.SignupScreen
+import com.example.signalmatch_frontend.ui.startup.mypage.StartupMypageRoute
+import com.example.signalmatch_frontend.ui.startup.profilecreate.StartupCreateProfileRoute
+import com.example.signalmatch_frontend.ui.startup.profilecreate.StartupCreateProfileScreen
+
+@Composable
+fun NavigationHost(
+    navController: NavHostController = rememberNavController(),
+    startDestination: String
+) {
+
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        composable("landing") { LandingScreen(navController) }
+        composable("login") { LoginScreen(navController) }
+        composable("home") { HomeScreen(navController) }
+
+        composable("signup") { SignupRoleScreen(navController) }
+        composable("signup/{userRole}") { backStackEntry ->
+            val role = backStackEntry.arguments?.getString("userRole") ?: "INVESTOR"
+            SignupScreen(navController = navController, userRole = role)
+        }
+        composable("create profile-investor/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")?.toInt()
+            userId?.let {
+                InvestorCreateProfileScreen(navController, userId = it)
+            }
+        }
+        composable("create profile-startup/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")?.toInt()
+            userId?.let {
+                StartupCreateProfileScreen(navController, userId = it)
+            }
+        }
+        composable("bookmark") { BookmarkRoute(navController) }
+        composable("matching-list") { MatchingListRoute(navController) }
+        composable("manage account") { ManageAccountScreen(navController) }
+        composable("FAQ") { FAQScreen(navController) }
+        // composable("chat") { ChatListScreen(navController) }
+    }
+}

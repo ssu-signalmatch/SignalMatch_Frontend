@@ -20,7 +20,7 @@ interface ProfileApi {
 
     @GET("/api/investors/{userId}")
     suspend fun getInvestorProfile(
-        @Path("userId") userId: Long
+        @Path("userId") userId: Int
     ): GetInvestorProfileResponse
 
     @POST("/api/startups/me")
@@ -30,6 +30,6 @@ interface ProfileApi {
 
     @GET("/api/startups/{userId}")
     suspend fun getStartupProfile(
-        @Path("userId") userId: Long
+        @Path("userId") userId: Int
     ): GetStartupProfileResponse
 }

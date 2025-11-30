@@ -7,6 +7,7 @@ import com.example.signalmatch_frontend.data.model.response.GetInvestorProfileRe
 import com.example.signalmatch_frontend.data.model.response.GetStartupProfileResponse
 import com.example.signalmatch_frontend.data.model.response.InvestorCreateProfileResponse
 import com.example.signalmatch_frontend.data.model.response.StartupCreateProfileResponse
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class ProfileRepository @Inject constructor(
@@ -17,7 +18,7 @@ class ProfileRepository @Inject constructor(
     }
 
     suspend fun getInvestorProfile(
-        userId: Long
+        userId: Int
     ): GetInvestorProfileResponse {
         return profileApi.getInvestorProfile(userId)
     }
@@ -27,8 +28,9 @@ class ProfileRepository @Inject constructor(
     }
 
     suspend fun getStartupProfile(
-        userId: Long
+        userId: Int
     ): GetStartupProfileResponse {
         return profileApi.getStartupProfile(userId)
     }
+
 }
