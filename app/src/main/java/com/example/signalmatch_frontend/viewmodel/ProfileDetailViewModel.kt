@@ -3,7 +3,6 @@ package com.example.signalmatch_frontend.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.signalmatch_frontend.data.model.response.GetInvestorProfileResponse
 import com.example.signalmatch_frontend.data.model.response.InvestorProfileData
 import com.example.signalmatch_frontend.data.model.response.StartupProfileData
 import com.example.signalmatch_frontend.data.repository.ProfileRepository
@@ -32,13 +31,19 @@ class InvestorProfileDetailViewModel @Inject constructor(
 
     init {
         if (userId != -1) {
-            loadInvestorProfileDetail(userId)
+            loadInvestorProfileDetail()
         } else {
             _uiState.value = UiState.Error("잘못된 사용자 정보입니다.")
         }
     }
 
-    private fun loadInvestorProfileDetail(userId: Int) {
+    fun refresh() {
+        if (userId != -1) {
+            loadInvestorProfileDetail()
+        }
+    }
+
+    private fun loadInvestorProfileDetail() {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
@@ -78,13 +83,19 @@ class StartupProfileDetailViewModel @Inject constructor(
 
     init {
         if (userId != -1) {
-            loadStartupProfileDetail(userId)
+            loadStartupProfileDetail()
         } else {
             _uiState.value = UiState.Error("잘못된 사용자 정보입니다.")
         }
     }
 
-    private fun loadStartupProfileDetail(userId: Int) {
+    fun refresh() {
+        if (userId != -1) {
+            loadStartupProfileDetail()
+        }
+    }
+
+    private fun loadStartupProfileDetail() {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
@@ -93,7 +104,7 @@ class StartupProfileDetailViewModel @Inject constructor(
                     _uiState.value = UiState.Success(response.data)
                 } else {
                     _uiState.value = UiState.Error(
-                        response.message ?: "투자자 프로필 상세조회에 실패했어요."
+                        response.message ?: "스타트업 프로필 상세조회에 실패했어요."
                     )
                 }
             } catch (e: Exception) {
