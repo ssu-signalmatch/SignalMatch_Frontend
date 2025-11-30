@@ -17,11 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.signalmatch_frontend.data.model.response.StartupProfileData
 
 @Composable
 fun StartupProfileDetailScreen(
-    //navController: NavController,
+    navController: NavController,
+    userId: Int,
     profile: StartupProfileData
 ) {
     Column( modifier = Modifier
@@ -258,14 +260,14 @@ fun StartupProfileDetailScreen(
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF848484)
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(48.dp))
         }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Button(
-                onClick = { },
+                onClick = { navController.navigate("startup-edit profile/$userId") },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFAEF1EB),
                     contentColor = Color.White,

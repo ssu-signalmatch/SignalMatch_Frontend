@@ -17,12 +17,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.signalmatch_frontend.data.model.response.InvestorProfileData
 
 
 @Composable
 fun InvestorProfileDetailScreen(
-    //navController: NavController,
+    navController: NavController,
+    userId: Int,
     profile: InvestorProfileData
 ) {
     Column(
@@ -69,7 +71,7 @@ fun InvestorProfileDetailScreen(
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 "\"" + " ${profile.intro} " + "\"",
-                fontSize = 16.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF848484),
                 modifier = Modifier.padding(horizontal = 20.dp)
@@ -183,14 +185,14 @@ fun InvestorProfileDetailScreen(
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF848484)
                 )
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(48.dp))
             }
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Button(
-                onClick = { },
+                onClick = { navController.navigate("investor-edit profile/$userId") },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFAEF1EB),
                     contentColor = Color.White,

@@ -13,6 +13,7 @@ import com.example.signalmatch_frontend.ui.home.HomeScreen
 import com.example.signalmatch_frontend.ui.investor.mypage.InvestorMypageRoute
 import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorCreateProfileRoute
 import com.example.signalmatch_frontend.ui.investor.profiledetail.InvestorProfileDetailRoute
+import com.example.signalmatch_frontend.ui.investor.profileedit.InvestorEditProfileRoute
 import com.example.signalmatch_frontend.ui.mypage.FAQScreen
 import com.example.signalmatch_frontend.ui.mypage.ManageAccountScreen
 import com.example.signalmatch_frontend.ui.mypage.bookmark_list.BookmarkRoute
@@ -24,6 +25,7 @@ import com.example.signalmatch_frontend.ui.startup.mypage.StartupMypageRoute
 import com.example.signalmatch_frontend.ui.post.PostLoginRoute
 import com.example.signalmatch_frontend.ui.startup.profilecreate.StartupCreateProfileRoute
 import com.example.signalmatch_frontend.ui.startup.profiledetail.StartupProfileDetailRoute
+import com.example.signalmatch_frontend.ui.startup.profileedit.StartupEditProfileRoute
 
 @Composable
 fun NavigationHost(
@@ -94,7 +96,6 @@ fun NavigationHost(
                 userId = userId
             )
         }
-
         composable(
             route = "startup-create profile/{userId}",
             arguments = listOf(
@@ -108,6 +109,7 @@ fun NavigationHost(
                 userId = userId
             )
         }
+
         // 홈
         composable(
             route = "home/{userId}",
@@ -156,16 +158,36 @@ fun NavigationHost(
             arguments = listOf(
                 navArgument("userId") { type = NavType.IntType }
             )
-        ) {
-            InvestorProfileDetailRoute(navController)
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+
+            InvestorProfileDetailRoute(
+                navController = navController,
+                userId = userId
+            )
         }
         composable(
             route = "startup-profile detail/{userId}",
             arguments = listOf(
                 navArgument("userId") { type = NavType.IntType }
             )
-        ) {
-            StartupProfileDetailRoute(navController)
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+
+            StartupProfileDetailRoute(
+                navController = navController,
+                userId = userId
+            )
+        }
+
+        //프로필 수정
+        composable("investor-edit profile/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
+            InvestorEditProfileRoute(navController = navController, userId = userId)
+        }
+        composable("startup-edit profile/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
+            StartupEditProfileRoute(navController = navController, userId = userId)
         }
 
         composable("bookmark") { BookmarkRoute(navController) }
