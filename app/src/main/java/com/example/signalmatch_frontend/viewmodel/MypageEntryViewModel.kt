@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.signalmatch_frontend.data.api.UserApi
 import com.example.signalmatch_frontend.data.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -13,7 +16,23 @@ import javax.inject.Inject
 @HiltViewModel
 class MypageEntryViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
+    private val userApi: UserApi
 ) : ViewModel() {
+
+    private val _profileImageUrl = MutableStateFlow<String?>(null)
+    val profileImageUrl: StateFlow<String?> = _profileImageUrl
+
+
+    fun loadProfileImage() {
+        viewModelScope.launch {
+            try {
+                val response = userApi.getMe()
+                _profileImageUrl.value = response.data.profileImageUrl
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     fun openMypage(
         navController: NavController,
@@ -36,7 +55,6 @@ class MypageEntryViewModel @Inject constructor(
                     onError("투자자 프로필 조회 실패 (${e.code()})")
                     return@launch
                 }
-
             } catch (e: Exception) {
                 onError(e.message ?: "투자자 프로필 조회 중 오류 발생")
                 return@launch

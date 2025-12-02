@@ -2,6 +2,7 @@ package com.example.signalmatch_frontend.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.signalmatch_frontend.data.local.PreferenceDataStore
 import com.example.signalmatch_frontend.data.model.request.InvestorEditProfileRequest
 import com.example.signalmatch_frontend.data.model.request.StartupEditProfileRequest
 import com.example.signalmatch_frontend.data.repository.ProfileRepository
@@ -15,10 +16,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.time.LocalDate
 
 @HiltViewModel
 class StartupEditProfileViewModel @Inject constructor(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val preferenceDataStore: PreferenceDataStore
 ) : ViewModel() {
 
     private val _uiState =
@@ -72,6 +75,10 @@ class StartupEditProfileViewModel @Inject constructor(
             try {
                 val response = profileRepository.editStartupProfile(request)
                 if (response.isSuccessful) {
+
+                    val today = LocalDate.now().toString()
+                    preferenceDataStore.saveLastUpdatedDate(today)
+
                     val msg = response.body()?.message ?: "수정되었습니다."
                     _uiState.value = StartupEditProfileUiState.Success(msg)
                 } else {
@@ -97,7 +104,8 @@ class StartupEditProfileViewModel @Inject constructor(
 
 @HiltViewModel
 class InvestorEditProfileViewModel @Inject constructor(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val preferenceDataStore: PreferenceDataStore
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<InvestorEditProfileUiState>(InvestorEditProfileUiState.Idle)
@@ -134,6 +142,10 @@ class InvestorEditProfileViewModel @Inject constructor(
 
             val response = profileRepository.editInvestorProfile(request)
             if (response.isSuccessful) {
+
+                val today = LocalDate.now().toString()
+                preferenceDataStore.saveLastUpdatedDate(today)
+
                 val msg = response.body()?.message ?: "수정되었습니다."
                 _uiState.value = InvestorEditProfileUiState.Success(msg)
             } else {

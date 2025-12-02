@@ -1,16 +1,15 @@
 package com.example.signalmatch_frontend.ui.components.card
 
-import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -31,9 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.signalmatch_frontend.R
 import coil.compose.AsyncImage
-import com.example.signalmatch_frontend.ui.components.image.ProfileImage
+import com.example.signalmatch_frontend.R
+import com.example.signalmatch_frontend.ui.components.image.ProfileImageSelector
 
 
 @Composable
@@ -201,8 +200,7 @@ fun StartupProfileCard(
     navController: NavController,
     model: String?,
     name: String,
-    category: String,
-    round: String,
+    status: String,
     userId: Int
 ) {
     Card(
@@ -225,9 +223,28 @@ fun StartupProfileCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileImage(
-                    imageUri = model?.let { Uri.parse(it) }
-                )
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(20.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (!model.isNullOrBlank()) {
+                        AsyncImage(
+                            model = model,
+                            contentDescription = "프로필 이미지",
+                            modifier = Modifier.matchParentSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(R.drawable.ic_profile),
+                            contentDescription = "기본 프로필 이미지",
+                            modifier = Modifier.matchParentSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.width(30.dp))
                 Column() {
                     Text(
@@ -236,35 +253,18 @@ fun StartupProfileCard(
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = category,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF848484)
-                        )
-                        Text(
-                            " • ",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF848484)
-                        )
-                        Text(
-                            text = round,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF848484)
-                        )
-                    }
-
+                    Text(
+                        text = status,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF848484)
+                    )
                 }
             }
         }
     }
 }
+
 
 
 @Composable
@@ -297,9 +297,28 @@ fun InvestorProfileCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileImage(
-                    imageUri = model?.let { Uri.parse(it) }
-                )
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(20.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (!model.isNullOrBlank()) {
+                        AsyncImage(
+                            model = model,
+                            contentDescription = "프로필 이미지",
+                            modifier = Modifier.matchParentSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(R.drawable.ic_profile),
+                            contentDescription = "기본 프로필 이미지",
+                            modifier = Modifier.matchParentSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.width(30.dp))
 
                 Column {
@@ -318,9 +337,9 @@ fun InvestorProfileCard(
                 }
             }
         }
-
     }
 }
+
 
 @Composable
 fun SearchCard1(

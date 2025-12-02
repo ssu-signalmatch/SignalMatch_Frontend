@@ -43,12 +43,11 @@ fun StartupMypageScreen(
 ) {
     val context = LocalContext.current
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val imagePickerLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent()
-        ) { uri: Uri? ->
-            if (uri != null) selectedImageUri = uri
-        }
+
+    LaunchedEffect(Unit) {
+        mypageViewModel.loadProfileImage()
+    }
+    val profileImageUrl by mypageViewModel.profileImageUrl.collectAsState()
 
     Scaffold(
         bottomBar = {
@@ -101,8 +100,8 @@ fun StartupMypageScreen(
                 val data = uiState.data
 
                 val startupName = data.startupName
-                val businessArea = data.businessAreas.toString()
-                val investorStage = data.investorStages
+                val status = data.status
+                val displayImage = selectedImageUri?.toString() ?: profileImageUrl
 
                 Column(
                     modifier = Modifier
@@ -117,10 +116,9 @@ fun StartupMypageScreen(
 
                     StartupProfileCard(
                         navController,
-                        selectedImageUri?.toString(),
+                        displayImage,
                         startupName,
-                        businessArea,
-                        investorStage,
+                        status,
                         userId
                     )
                     Spacer(modifier = Modifier.height(30.dp))

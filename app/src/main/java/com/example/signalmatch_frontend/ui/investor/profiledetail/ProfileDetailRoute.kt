@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.signalmatch_frontend.data.local.PreferenceDataStore
 import com.example.signalmatch_frontend.viewmodel.InvestorProfileDetailViewModel
 
 @Composable
@@ -23,24 +24,10 @@ fun InvestorProfileDetailRoute(
     viewModel: InvestorProfileDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val lastUpdatedDate by viewModel.lastUpdatedDate.collectAsState(initial = null)
+
     LaunchedEffect(userId) {
         viewModel.refresh()
-    }
-    val currentBackStackEntry = navController.currentBackStackEntry
-    val refreshFlow = currentBackStackEntry
-        ?.savedStateHandle
-        ?.getStateFlow("refresh_investor_profile", false)
-
-    val shouldRefresh by refreshFlow?.collectAsState()
-        ?: remember { mutableStateOf(false) }
-
-    LaunchedEffect(shouldRefresh) {
-        if (shouldRefresh) {
-            viewModel.refresh()
-            currentBackStackEntry
-                ?.savedStateHandle
-                ?.set("refresh_investor_profile", false)
-        }
     }
 
     when (val state = uiState) {
@@ -61,8 +48,13 @@ fun InvestorProfileDetailRoute(
             InvestorProfileDetailScreen(
                 navController = navController,
                 userId = userId,
-                profile = state.data
+                profile = state.profile,
+                profileImageUrl = state.profileImageUrl,
+                lastUpdatedDate =  lastUpdatedDate,
+                bookmarkCount = state.bookmarkCount
+
             )
         }
     }
 }
+

@@ -5,6 +5,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.signalmatch_frontend.R
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,13 +20,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.signalmatch_frontend.data.model.response.StartupProfileData
+import com.example.signalmatch_frontend.ui.components.image.ProfileImageSelector
 
 @Composable
 fun StartupProfileDetailScreen(
     navController: NavController,
     userId: Int,
-    profile: StartupProfileData
+    profile: StartupProfileData,
+    profileImageUrl: String?,
+    lastUpdatedDate: String?,
+    bookmarkCount: Int
 ) {
+
     Column( modifier = Modifier
         .fillMaxSize()
         .background(Color.White)
@@ -38,41 +44,14 @@ fun StartupProfileDetailScreen(
             verticalArrangement = Arrangement.Top
         ) {
             Spacer(modifier = Modifier.height(100.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_profile),
-                    contentDescription = "프로필 이미지",
-                    modifier = Modifier.size(100.dp)
-                )
-                Spacer(modifier = Modifier.width(30.dp))
-                Column {
-                    Text(
-                        profile.startupName,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            profile.businessAreas.firstOrNull() ?: "",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF848484)
-                        )
-                        Text(" • ")
-                        Text(
-                            profile.investorStages,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF848484)
-                        )
-                    }
-                }
-            }
+
+            ProfileImageSelector(
+                userId = userId,
+                initialImageUrl = profileImageUrl,
+                modifier = Modifier.size(150.dp)
+            )
+
+
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 "\"" + " ${profile.intro} " + "\"",
@@ -95,7 +74,7 @@ fun StartupProfileDetailScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        "+346",
+                        text = "+$bookmarkCount",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF848484)
@@ -103,6 +82,10 @@ fun StartupProfileDetailScreen(
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 Row(
+                    modifier = Modifier
+                        .clickable {
+                            navController.navigate("ir/$userId")
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
@@ -128,8 +111,9 @@ fun StartupProfileDetailScreen(
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        "2025.05.26",
+                    Text(lastUpdatedDate
+                            ?.replace("-", ".")
+                            ?: "수정 기록 없음",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF848484)

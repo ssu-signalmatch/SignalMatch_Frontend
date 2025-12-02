@@ -2,12 +2,14 @@ package com.example.signalmatch_frontend.data.api
 
 import com.example.signalmatch_frontend.data.model.request.InvestorCreateProfileRequest
 import com.example.signalmatch_frontend.data.model.request.InvestorEditProfileRequest
+import com.example.signalmatch_frontend.data.model.request.PresignImageRequest
 import com.example.signalmatch_frontend.data.model.request.StartupCreateProfileRequest
 import com.example.signalmatch_frontend.data.model.request.StartupEditProfileRequest
 import com.example.signalmatch_frontend.data.model.response.GetInvestorProfileResponse
 import com.example.signalmatch_frontend.data.model.response.GetStartupProfileResponse
 import com.example.signalmatch_frontend.data.model.response.InvestorCreateProfileResponse
 import com.example.signalmatch_frontend.data.model.response.InvestorEditProfileResponse
+import com.example.signalmatch_frontend.data.model.response.PresignImageResponse
 import com.example.signalmatch_frontend.data.model.response.StartupCreateProfileResponse
 import com.example.signalmatch_frontend.data.model.response.StartupEditProfileResponse
 import retrofit2.Response
