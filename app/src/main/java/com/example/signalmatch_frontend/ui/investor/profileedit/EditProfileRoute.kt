@@ -66,7 +66,10 @@ fun InvestorEditProfileRoute(
 
             navController.previousBackStackEntry
                 ?.savedStateHandle
-                ?.set("refresh_investor_profile", true)
+                ?.apply {
+                    set("refresh_investor_profile", true)
+                    set("investor_profile_updated_at", state.updatedAt)
+                }
 
             viewModel.resetState()
             navController.popBackStack()

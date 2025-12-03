@@ -26,7 +26,6 @@ fun StartupEditProfileRoute(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // 화면 들어올 때 프로필 조회
     LaunchedEffect(userId) {
         viewModel.loadProfile(userId)
     }
@@ -77,7 +76,10 @@ fun StartupEditProfileRoute(
 
             navController.previousBackStackEntry
                 ?.savedStateHandle
-                ?.set("refresh_startup_profile", true)
+                ?.apply {
+                    set("refresh_startup_profile", true)
+                    set("startup_profile_updated_at", state.updatedAt)
+                }
 
             viewModel.resetState()
             navController.popBackStack()

@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -362,7 +363,7 @@ fun SearchScreen(
                 Spacer(Modifier.height(44.dp))
 
                 when {
-                    isLoading -> {
+                    isLoading -> {/*
                         CircularProgressIndicator()
                         Spacer(Modifier.height(16.dp))
                     }
@@ -378,6 +379,7 @@ fun SearchScreen(
                         )
                         Spacer(Modifier.height(16.dp))
 
+                        // -------- START-UP 리스트 ----------
                         Text(
                             "START-UP",
                             fontSize = 16.sp,
@@ -394,7 +396,10 @@ fun SearchScreen(
                                 navController = navController,
                                 name = startup.startupName,
                                 category = category,
-                                saveCount = 0
+                                saveCount = 0,
+                                onClick = {
+                                    navController.navigate("startup-profile-detail/${startup.userId}")
+                                }
                             )
                             Spacer(Modifier.height(17.dp))
                         }
@@ -415,10 +420,13 @@ fun SearchScreen(
                                 navController = navController,
                                 name = investor.investorName,
                                 category = category,
-                                saveCount = 0
+                                saveCount = 0,
+                                onClick = {
+                                    navController.navigate("investor-profile detail/${investor.userId}")
+                                }
                             )
                             Spacer(Modifier.height(17.dp))
-                        }
+                        }*/
                     }
 
                     isSearched && !hasResult -> {
@@ -441,13 +449,11 @@ fun SearchScreen(
                         Spacer(Modifier.height(16.dp))
 
                         if (bestStartups.isEmpty()) {
-                            SearchCard1(
-                                navController,
-                                R.drawable.ic_1st,
-                                "코끼리 연구소 1",
-                                "핀테크",
-                                255
-                            )
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+                                Text("등록된 start-up이 없습니다.")
+                            }
                         } else {
                             bestStartups.take(3).forEachIndexed { index, item ->
                                 val iconRes = when (index) {
@@ -462,7 +468,10 @@ fun SearchScreen(
                                     iconRes,
                                     item.startupName,
                                     item.intro,
-                                    item.bookmarkCount
+                                    item.bookmarkCount,
+                                    onClick = {
+                                        navController.navigate("startup-profile detail/${item.startupId}")
+                                    }
                                 )
                                 Spacer(Modifier.height(17.dp))
                             }
@@ -475,7 +484,10 @@ fun SearchScreen(
                                     rank,
                                     item.startupName,
                                     item.intro,
-                                    item.bookmarkCount
+                                    item.bookmarkCount,
+                                    onClick = {
+                                        navController.navigate("startup-profile detail/${item.startupId}")
+                                    }
                                 )
                                 Spacer(Modifier.height(17.dp))
                             }

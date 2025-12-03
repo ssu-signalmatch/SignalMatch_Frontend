@@ -1,6 +1,5 @@
 package com.example.signalmatch_frontend.di
 
-import android.content.Context
 import com.example.signalmatch_frontend.data.api.AuthApi
 import com.example.signalmatch_frontend.data.api.AuthInterceptor
 import com.example.signalmatch_frontend.data.api.BookmarkApi
@@ -11,7 +10,6 @@ import com.example.signalmatch_frontend.data.api.S3Api
 import com.example.signalmatch_frontend.data.api.SearchApi
 import com.example.signalmatch_frontend.data.api.UploadApi
 import com.example.signalmatch_frontend.data.api.UserApi
-import com.example.signalmatch_frontend.data.local.PreferenceDataStore
 import com.example.signalmatch_frontend.data.model.response.Mypage
 import com.example.signalmatch_frontend.data.remote.MypageAdapter
 import com.google.gson.Gson
@@ -19,7 +17,6 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import javax.inject.Singleton
@@ -133,11 +130,6 @@ object NetworkModule {
         return GsonBuilder()
             .registerTypeAdapter(Mypage::class.java, MypageAdapter())
             .create()
-    }
-    @Provides
-    @Singleton
-    fun providePreferenceDataStore(@ApplicationContext context: Context): PreferenceDataStore {
-        return PreferenceDataStore(context)
     }
 
 }
