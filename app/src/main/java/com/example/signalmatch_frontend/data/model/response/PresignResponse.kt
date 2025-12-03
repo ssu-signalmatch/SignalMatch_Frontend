@@ -1,9 +1,6 @@
 package com.example.signalmatch_frontend.data.model.response
 
-data class PresignFileResponse(
-    val uploadUrl: String,
-    val fileUrl: String
-)
+import com.google.gson.annotations.SerializedName
 
 data class PresignImageResponse(
     val message: String,

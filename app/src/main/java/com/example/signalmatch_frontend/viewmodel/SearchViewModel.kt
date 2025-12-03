@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.signalmatch_frontend.data.api.SearchApi
 import com.example.signalmatch_frontend.data.model.request.SearchRequest
+import com.example.signalmatch_frontend.data.model.response.BestStartupItem
 import com.example.signalmatch_frontend.data.model.response.InvestorSearchDto
 import com.example.signalmatch_frontend.data.model.response.StartupSearchDto
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,11 +29,19 @@ class SearchViewModel @Inject constructor(
     var investors by mutableStateOf<List<InvestorSearchDto>>(emptyList())
         private set
 
+    var bestStartups by mutableStateOf<List<BestStartupItem>>(emptyList())
+        private set
+
     var isLoading by mutableStateOf(false)
         private set
 
     var isSearched by mutableStateOf(false)
         private set
+
+    init {
+        loadBestStartups()
+    }
+
 
     fun onQueryChange(newQuery: String) {
         query = newQuery
@@ -42,6 +51,20 @@ class SearchViewModel @Inject constructor(
         selectedAreas =
             if (selectedAreas.contains(area)) selectedAreas - area
             else selectedAreas + area
+    }
+
+    fun loadBestStartups() {
+        viewModelScope.launch {
+            try {
+                isLoading = true
+                val res = searchApi.getBestStartups()
+                bestStartups = if (res.success) res.data else emptyList()
+            } catch (e: Exception) {
+                bestStartups = emptyList()
+            } finally {
+                isLoading = false
+            }
+        }
     }
 
     fun onSearch() {

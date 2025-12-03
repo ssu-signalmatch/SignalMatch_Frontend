@@ -17,6 +17,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,12 +48,12 @@ fun InvestorMypageScreen(
 ) {
     val context = LocalContext.current
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val imagePickerLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent()
-        ) { uri: Uri? ->
-            if (uri != null) selectedImageUri = uri
-        }
+
+    LaunchedEffect(Unit) {
+        mypageViewModel.loadProfileImage()
+    }
+
+    val profileImageUrl by mypageViewModel.profileImageUrl.collectAsState()
 
     Scaffold(
         bottomBar = {
@@ -104,6 +106,7 @@ fun InvestorMypageScreen(
 
                 val investorName = data.investorName
                 val organizationName = data.organizationName
+                val displayImage = selectedImageUri?.toString() ?: profileImageUrl
 
                 Column(
                     modifier = Modifier
@@ -117,7 +120,7 @@ fun InvestorMypageScreen(
 
                     InvestorProfileCard(
                         navController,
-                        selectedImageUri?.toString(),
+                        displayImage,
                         investorName,
                         organizationName,
                         userId

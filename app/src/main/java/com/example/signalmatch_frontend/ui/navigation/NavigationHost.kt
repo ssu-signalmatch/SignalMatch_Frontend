@@ -14,6 +14,7 @@ import com.example.signalmatch_frontend.ui.investor.mypage.InvestorMypageRoute
 import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorCreateProfileRoute
 import com.example.signalmatch_frontend.ui.investor.profiledetail.InvestorProfileDetailRoute
 import com.example.signalmatch_frontend.ui.investor.profileedit.InvestorEditProfileRoute
+import com.example.signalmatch_frontend.ui.ir.IRRoute
 import com.example.signalmatch_frontend.ui.mypage.FAQScreen
 import com.example.signalmatch_frontend.ui.mypage.ManageAccountScreen
 import com.example.signalmatch_frontend.ui.mypage.bookmark_list.BookmarkRoute
@@ -188,6 +189,20 @@ fun NavigationHost(
         composable("startup-edit profile/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")!!.toInt()
             StartupEditProfileRoute(navController = navController, userId = userId)
+        }
+
+        //IR
+        composable(
+            route = "ir/{startupId}",
+            arguments = listOf(
+                navArgument("startupId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val startupId = backStackEntry.arguments?.getInt("startupId") ?: -1
+            IRRoute(
+                navController = navController,
+                startupId = startupId
+            )
         }
 
         composable("bookmark") { BookmarkRoute(navController) }

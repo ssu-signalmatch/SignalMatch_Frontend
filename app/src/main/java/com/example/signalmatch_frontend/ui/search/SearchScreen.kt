@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,6 +61,9 @@ fun SearchScreen(
     val investors = viewModel.investors
     val isLoading = viewModel.isLoading
     val selectedAreas = viewModel.selectedAreas
+
+    val bestStartups = viewModel.bestStartups
+    val isSearched = viewModel.isSearched
 
     val hasResult = startups.isNotEmpty() || investors.isNotEmpty()
 
@@ -359,14 +363,12 @@ fun SearchScreen(
                 Spacer(Modifier.height(44.dp))
 
                 when {
-                    isLoading -> {
-                        // 로딩 중
+                    isLoading -> {/*
                         CircularProgressIndicator()
                         Spacer(Modifier.height(16.dp))
                     }
 
-                    hasResult -> {
-                        // 검색 결과가 있을 때: 랭킹 지우고 결과 카드만 표시
+                    isSearched && hasResult -> {
                         Text(
                             text = "검색 결과",
                             fontSize = 10.sp,
@@ -377,7 +379,7 @@ fun SearchScreen(
                         )
                         Spacer(Modifier.height(16.dp))
 
-                        // 1) 스타트업 결과
+                        // -------- START-UP 리스트 ----------
                         Text(
                             "START-UP",
                             fontSize = 16.sp,
@@ -394,12 +396,14 @@ fun SearchScreen(
                                 navController = navController,
                                 name = startup.startupName,
                                 category = category,
-                                saveCount = 0
+                                saveCount = 0,
+                                onClick = {
+                                    navController.navigate("startup-profile-detail/${startup.userId}")
+                                }
                             )
                             Spacer(Modifier.height(17.dp))
                         }
 
-                        // 2) 투자자 결과
                         Text(
                             "INVESTOR",
                             fontSize = 16.sp,
@@ -416,14 +420,25 @@ fun SearchScreen(
                                 navController = navController,
                                 name = investor.investorName,
                                 category = category,
-                                saveCount = 0
+                                saveCount = 0,
+                                onClick = {
+                                    navController.navigate("investor-profile detail/${investor.userId}")
+                                }
                             )
                             Spacer(Modifier.height(17.dp))
-                        }
+                        }*/
+                    }
+
+                    isSearched && !hasResult -> {
+                        Text(
+                            text = "검색 결과가 없습니다.",
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(top = 32.dp)
+                        )
                     }
 
                     else -> {
-                        // 🔔 검색 전/결과 없을 때: 이달의 랭킹 보여주기
                         Text(
                             "이달의 랭킹🎖",
                             fontSize = 24.sp,
@@ -433,31 +448,50 @@ fun SearchScreen(
 
                         Spacer(Modifier.height(16.dp))
 
-                        SearchCard1(navController, R.drawable.ic_1st, "코끼리 연구소 1", "핀테크", 255)
-                        Spacer(Modifier.height(17.dp))
-                        SearchCard1(
-                            navController,
-                            R.drawable.ic_2nd,
-                            "코끼리 연구소 2",
-                            "B2B SaaS & 데이터",
-                            204
-                        )
-                        Spacer(Modifier.height(17.dp))
-                        SearchCard1(navController, R.drawable.ic_3rd, "코끼리 연구소 3", "푸드테크 & 커머스", 4)
-                        Spacer(Modifier.height(17.dp))
-                        SearchCard2(navController, "4", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                        Spacer(Modifier.height(17.dp))
-                        SearchCard2(navController, "5", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                        Spacer(Modifier.height(17.dp))
-                        SearchCard2(navController, "6", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                        Spacer(Modifier.height(17.dp))
-                        SearchCard2(navController, "7", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                        Spacer(Modifier.height(17.dp))
-                        SearchCard2(navController, "8", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                        Spacer(Modifier.height(17.dp))
-                        SearchCard2(navController, "9", "코끼리 연구소 4", "클린테크 & 에너지", 4)
-                        Spacer(Modifier.height(17.dp))
-                        SearchCard2(navController, "10", "코끼리 연구소 4", "클린테크 & 에너지", 4)
+                        if (bestStartups.isEmpty()) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+                                Text("등록된 start-up이 없습니다.")
+                            }
+                        } else {
+                            bestStartups.take(3).forEachIndexed { index, item ->
+                                val iconRes = when (index) {
+                                    0 -> R.drawable.ic_1st
+                                    1 -> R.drawable.ic_2nd
+                                    2 -> R.drawable.ic_3rd
+                                    else -> R.drawable.ic_1st
+                                }
+
+                                SearchCard1(
+                                    navController,
+                                    iconRes,
+                                    item.startupName,
+                                    item.intro,
+                                    item.bookmarkCount,
+                                    onClick = {
+                                        navController.navigate("startup-profile detail/${item.startupId}")
+                                    }
+                                )
+                                Spacer(Modifier.height(17.dp))
+                            }
+
+                            bestStartups.drop(3).forEachIndexed { index, item ->
+                                val rank = (index + 4).toString()
+
+                                SearchCard2(
+                                    navController,
+                                    rank,
+                                    item.startupName,
+                                    item.intro,
+                                    item.bookmarkCount,
+                                    onClick = {
+                                        navController.navigate("startup-profile detail/${item.startupId}")
+                                    }
+                                )
+                                Spacer(Modifier.height(17.dp))
+                            }
+                        }
                     }
                 }
 

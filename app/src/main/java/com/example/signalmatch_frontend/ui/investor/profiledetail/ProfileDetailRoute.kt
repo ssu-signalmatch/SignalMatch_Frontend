@@ -4,12 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,24 +18,20 @@ fun InvestorProfileDetailRoute(
     viewModel: InvestorProfileDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val lastUpdatedFromVm by viewModel.lastUpdatedDate.collectAsState(initial = null)
+
+    val currentBackStackEntry = navController.currentBackStackEntry
+    val updatedAtState = currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("investor_profile_updated_at", null)
+
+    val updatedAt by updatedAtState?.collectAsState()
+        ?: remember { mutableStateOf<String?>(null) }
+
+    val lastUpdatedToShow = updatedAt ?: lastUpdatedFromVm
+
     LaunchedEffect(userId) {
         viewModel.refresh()
-    }
-    val currentBackStackEntry = navController.currentBackStackEntry
-    val refreshFlow = currentBackStackEntry
-        ?.savedStateHandle
-        ?.getStateFlow("refresh_investor_profile", false)
-
-    val shouldRefresh by refreshFlow?.collectAsState()
-        ?: remember { mutableStateOf(false) }
-
-    LaunchedEffect(shouldRefresh) {
-        if (shouldRefresh) {
-            viewModel.refresh()
-            currentBackStackEntry
-                ?.savedStateHandle
-                ?.set("refresh_investor_profile", false)
-        }
     }
 
     when (val state = uiState) {
@@ -61,7 +52,10 @@ fun InvestorProfileDetailRoute(
             InvestorProfileDetailScreen(
                 navController = navController,
                 userId = userId,
-                profile = state.data
+                profile = state.profile,
+                profileImageUrl = state.profileImageUrl,
+                bookmarkCount = state.bookmarkCount,
+                lastUpdatedDate = lastUpdatedToShow,
             )
         }
     }
