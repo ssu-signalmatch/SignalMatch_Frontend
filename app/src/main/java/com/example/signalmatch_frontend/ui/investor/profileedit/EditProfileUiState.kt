@@ -4,6 +4,9 @@ sealed interface InvestorEditProfileUiState {
     object Idle : InvestorEditProfileUiState
     object Loading : InvestorEditProfileUiState
     data class Loaded(val form: InvestorProfileForm) : InvestorEditProfileUiState
-    data class Success(val message: String) : InvestorEditProfileUiState
+    data class Success(
+        val message: String,
+        val updatedAt: String
+    ) : InvestorEditProfileUiState
     data class Error(val message: String) : InvestorEditProfileUiState
 }

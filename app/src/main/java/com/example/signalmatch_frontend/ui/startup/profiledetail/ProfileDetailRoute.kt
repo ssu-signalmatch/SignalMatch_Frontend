@@ -7,12 +7,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.signalmatch_frontend.viewmodel.StartupProfileDetailViewModel
+
 
 @Composable
 fun StartupProfileDetailRoute(
@@ -21,7 +24,18 @@ fun StartupProfileDetailRoute(
     viewModel: StartupProfileDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val lastUpdatedDate by viewModel.lastUpdatedDate.collectAsState(initial = null)
+    val lastUpdatedFromVm by viewModel.lastUpdatedDate.collectAsState(initial = null)
+
+
+    val currentBackStackEntry = navController.currentBackStackEntry
+    val updatedAtState = currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("startup_profile_updated_at", null)
+
+    val updatedAt by updatedAtState?.collectAsState()
+        ?: remember { mutableStateOf<String?>(null) }
+
+    val lastUpdatedToShow = updatedAt ?: lastUpdatedFromVm
 
     LaunchedEffect(userId) {
         viewModel.refresh()
@@ -47,7 +61,7 @@ fun StartupProfileDetailRoute(
                 userId = userId,
                 profile = state.profile,
                 profileImageUrl = state.profileImageUrl,
-                lastUpdatedDate =  lastUpdatedDate,
+                lastUpdatedDate = lastUpdatedToShow,
                 bookmarkCount = state.bookmarkCount
             )
         }
