@@ -154,7 +154,6 @@ class InvestorEditProfileViewModel @Inject constructor(
                     val body = response.body()
                     if (body != null && body.success) {
                         val updatedAt = body.data.updatedAt.take(10)
-
                         val msg = body.message ?: "수정되었습니다."
                         _uiState.value = InvestorEditProfileUiState.Success(
                             message = msg,

@@ -68,6 +68,7 @@ class InvestorProfileDetailViewModel @Inject constructor(
                     )
                     return@launch
                 }
+                val profile = profileResponse.data
 
                 val meResponse = userRepository.getMe()
                 if (!(meResponse.success && meResponse.data != null)) {
@@ -77,11 +78,16 @@ class InvestorProfileDetailViewModel @Inject constructor(
                     return@launch
                 }
 
-                val imageUrl = meResponse.data.profileImageUrl
-                val bookmarkCount = meResponse.data.bookmarkCount
+                val meData = meResponse.data
+                val imageUrl = meData.profileImageUrl
+                val bookmarkCount = meData.bookmarkCount
+
+                meData.updatedAt?.let {
+                    _lastUpdatedDate.value = it.take(10)
+                }
 
                 _uiState.value = UiState.Success(
-                    profile = profileResponse.data,
+                    profile = profile,
                     profileImageUrl = imageUrl,
                     bookmarkCount = bookmarkCount
                 )
@@ -141,6 +147,7 @@ class InvestorProfileDetailViewModel @Inject constructor(
     }
 }
 
+
 @HiltViewModel
 class StartupProfileDetailViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
@@ -191,6 +198,7 @@ class StartupProfileDetailViewModel @Inject constructor(
                     )
                     return@launch
                 }
+                val profile = profileResponse.data
 
                 val meResponse = userRepository.getMe()
                 if (!(meResponse.success && meResponse.data != null)) {
@@ -200,11 +208,16 @@ class StartupProfileDetailViewModel @Inject constructor(
                     return@launch
                 }
 
-                val imageUrl = meResponse.data.profileImageUrl
-                val bookmarkCount = meResponse.data.bookmarkCount
+                val meData = meResponse.data
+                val imageUrl = meData.profileImageUrl
+                val bookmarkCount = meData.bookmarkCount
+
+                meData.updatedAt?.let {
+                    _lastUpdatedDate.value = it.take(10)
+                }
 
                 _uiState.value = UiState.Success(
-                    profile = profileResponse.data,
+                    profile = profile,
                     profileImageUrl = imageUrl,
                     bookmarkCount = bookmarkCount
                 )
@@ -242,7 +255,7 @@ class StartupProfileDetailViewModel @Inject constructor(
                     totalFunding = form.totalFunding.toInt(),
                     history = form.history,
                     investorStages = form.investorStage,
-                    businessAreas = form.businessAreas.toList()
+                    businessAreas = form.businessAreas.toList(),
                 )
 
                 val response = profileRepository.editStartupProfile(request)
@@ -251,6 +264,8 @@ class StartupProfileDetailViewModel @Inject constructor(
                     val body = response.body()
                     if (body != null && body.success) {
                         val updatedAt = body.data.updatedAt.take(10)
+                        _lastUpdatedDate.value = updatedAt
+                        loadStartupProfileDetail()
                         onSuccess(updatedAt)
                     } else {
                         onError(body?.message ?: "프로필 수정에 실패했어요.")

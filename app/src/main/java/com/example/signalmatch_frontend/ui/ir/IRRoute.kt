@@ -11,8 +11,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.signalmatch_frontend.viewmodel.IRViewModel
-import com.example.signalmatch_frontend.viewmodel.IRUiState
-import com.example.signalmatch_frontend.viewmodel.DocumentUiState
 
 @Composable
 fun IRRoute(

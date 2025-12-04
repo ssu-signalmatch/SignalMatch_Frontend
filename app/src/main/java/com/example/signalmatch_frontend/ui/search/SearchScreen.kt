@@ -2,6 +2,7 @@ package com.example.signalmatch_frontend.ui.search
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.foundation.layout.Column
@@ -120,7 +121,10 @@ fun SearchScreen(
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "검색",
-                            tint = Color(0xFFADF1EB)
+                            tint = Color(0xFFADF1EB),
+                            modifier = Modifier.clickable {
+                                viewModel.resetSearch()
+                            }
                         )
                     },
                     colors = TextFieldDefaults.colors(
@@ -363,23 +367,15 @@ fun SearchScreen(
                 Spacer(Modifier.height(44.dp))
 
                 when {
-                    isLoading -> {/*
+                    isLoading -> {
                         CircularProgressIndicator()
                         Spacer(Modifier.height(16.dp))
                     }
 
                     isSearched && hasResult -> {
-                        Text(
-                            text = "검색 결과",
-                            fontSize = 10.sp,
-                            color = Color.Gray,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 24.dp)
-                        )
+
                         Spacer(Modifier.height(16.dp))
 
-                        // -------- START-UP 리스트 ----------
                         Text(
                             "START-UP",
                             fontSize = 16.sp,
@@ -396,9 +392,9 @@ fun SearchScreen(
                                 navController = navController,
                                 name = startup.startupName,
                                 category = category,
-                                saveCount = 0,
+                                saveCount = viewModel.getBookmarkCountForUser(startup.userId),
                                 onClick = {
-                                    navController.navigate("startup-profile-detail/${startup.userId}")
+                                    navController.navigate("startup-info/${startup.userId}")
                                 }
                             )
                             Spacer(Modifier.height(17.dp))
@@ -420,13 +416,13 @@ fun SearchScreen(
                                 navController = navController,
                                 name = investor.investorName,
                                 category = category,
-                                saveCount = 0,
+                                saveCount = viewModel.getBookmarkCountForUser(investor.userId),
                                 onClick = {
-                                    navController.navigate("investor-profile detail/${investor.userId}")
+                                    navController.navigate("investor-info/${investor.userId}")
                                 }
                             )
                             Spacer(Modifier.height(17.dp))
-                        }*/
+                        }
                     }
 
                     isSearched && !hasResult -> {
@@ -470,7 +466,7 @@ fun SearchScreen(
                                     item.intro,
                                     item.bookmarkCount,
                                     onClick = {
-                                        navController.navigate("startup-profile detail/${item.startupId}")
+                                        navController.navigate("startup-info/${item.userId}")
                                     }
                                 )
                                 Spacer(Modifier.height(17.dp))
@@ -486,7 +482,7 @@ fun SearchScreen(
                                     item.intro,
                                     item.bookmarkCount,
                                     onClick = {
-                                        navController.navigate("startup-profile detail/${item.startupId}")
+                                        navController.navigate("startup-info/${item.userId}")
                                     }
                                 )
                                 Spacer(Modifier.height(17.dp))

@@ -1,16 +1,29 @@
 package com.example.signalmatch_frontend.viewmodel
 
-import androidx.compose.runtime.*
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.signalmatch_frontend.data.api.SearchApi
-import com.example.signalmatch_frontend.data.model.request.SearchRequest
 import com.example.signalmatch_frontend.data.model.response.BestStartupItem
 import com.example.signalmatch_frontend.data.model.response.InvestorSearchDto
 import com.example.signalmatch_frontend.data.model.response.StartupSearchDto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private val INDUSTRY_AREAS = listOf(
+    "AGRICULTURE_FORESTRY_FISHING", "MINING", "MANUFACTURING",
+    "ELECTRICITY_GAS_STEAM_AC", "WATER_SEWAGE_WASTE", "CONSTRUCTION",
+    "WHOLESALE_RETAIL", "TRANSPORTATION_WAREHOUSING", "ACCOMMODATION_FOOD",
+    "INFORMATION_COMMUNICATION", "FINANCE_INSURANCE", "REAL_ESTATE",
+    "PROFESSIONAL_SCIENTIFIC_TECH", "BUSINESS_SUPPORT_RENTAL",
+    "PUBLIC_ADMIN_DEFENSE", "EDUCATION", "HEALTH_SOCIAL_WORK",
+    "ARTS_SPORTS_RECREATION", "ASSOCIATIONS_REPAIR_PERSONAL",
+    "HOUSEHOLD_EMPLOYMENT", "INTERNATIONAL_FOREIGN_ORG"
+)
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -20,7 +33,7 @@ class SearchViewModel @Inject constructor(
     var query by mutableStateOf("")
         private set
 
-    var selectedAreas by mutableStateOf<List<String>>(emptyList())
+    var selectedAreas by mutableStateOf<List<String>>(INDUSTRY_AREAS)
         private set
 
     var startups by mutableStateOf<List<StartupSearchDto>>(emptyList())
@@ -42,7 +55,6 @@ class SearchViewModel @Inject constructor(
         loadBestStartups()
     }
 
-
     fun onQueryChange(newQuery: String) {
         query = newQuery
     }
@@ -60,6 +72,7 @@ class SearchViewModel @Inject constructor(
                 val res = searchApi.getBestStartups()
                 bestStartups = if (res.success) res.data else emptyList()
             } catch (e: Exception) {
+                Log.e("SearchViewModel", "getBestStartups error: ${e.message}", e)
                 bestStartups = emptyList()
             } finally {
                 isLoading = false
@@ -67,26 +80,61 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun getBookmarkCountForUser(userId: Int): Int {
+        return bestStartups
+            .firstOrNull { it.userId == userId }
+            ?.bookmarkCount
+            ?: 0
+    }
+
+    fun resetSearch() {
+        query = ""
+        startups = emptyList()
+        investors = emptyList()
+        isSearched = false
+    }
+
     fun onSearch() {
         viewModelScope.launch {
+            Log.d("SearchViewModel", "onSearch() called. query='$query', areas=$selectedAreas")
+
             try {
                 isLoading = true
                 isSearched = true
 
-                val request = SearchRequest(
+                val res = searchApi.search(
                     keyword = query,
-                    areas = selectedAreas.toList(),
+                    areas = selectedAreas.takeIf { it.isNotEmpty() },
                     page = 0,
                     size = 10,
                     sort = emptyList()
                 )
 
-                val res = searchApi.search(request)
+                Log.d(
+                    "SearchViewModel",
+                    "search response success=${res.success}, " +
+                            "startupCount=${res.data.startups.size}, " +
+                            "investorCount=${res.data.investors.size}"
+                )
 
-                startups = res.data.startups
-                investors = res.data.investors
+                if (res.success) {
+                    startups = res.data.startups
+                    investors = res.data.investors
+
+                    if (startups.isNotEmpty()) {
+                        Log.d("SearchViewModel", "first startup userId=${startups.first().userId}")
+                    }
+                    if (investors.isNotEmpty()) {
+                        Log.d("SearchViewModel", "first investor userId=${investors.first().userId}")
+                    }
+                } else {
+                    Log.e("SearchViewModel", "search failed in API: ${res.message}")
+                    startups = emptyList()
+                    investors = emptyList()
+                }
 
             } catch (e: Exception) {
+                Log.e("SearchViewModel", "search error: ${e.message}", e)
                 startups = emptyList()
                 investors = emptyList()
             } finally {

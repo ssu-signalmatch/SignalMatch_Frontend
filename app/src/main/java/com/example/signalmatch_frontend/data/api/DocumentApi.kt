@@ -4,6 +4,7 @@ import com.example.signalmatch_frontend.data.model.request.DocumentRequest
 import com.example.signalmatch_frontend.data.model.response.DocumentDeleteResponse
 import com.example.signalmatch_frontend.data.model.response.DocumentListResponse
 import com.example.signalmatch_frontend.data.model.response.DocumentResponse
+import com.example.signalmatch_frontend.data.model.response.OtherDocumentListResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -24,4 +25,11 @@ interface DocumentApi {
     suspend fun deleteDocument(
         @Path("documentId") documentId: Int
     ): DocumentDeleteResponse
+
+    //다른 사용자 조회
+    @GET("api/documents/{userId}")
+    suspend fun getOtherDocuments(
+        @Path("userId") userId: Int
+    ): OtherDocumentListResponse
+
 }

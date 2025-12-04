@@ -11,6 +11,7 @@ import com.example.signalmatch_frontend.data.model.request.DocumentRequest
 import com.example.signalmatch_frontend.data.model.request.IrPresignRequest
 import com.example.signalmatch_frontend.data.model.response.DocumentListItem
 import com.example.signalmatch_frontend.data.model.response.DocumentResponse
+import com.example.signalmatch_frontend.data.model.response.OtherDocumentListResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -145,6 +146,10 @@ class DocumentRepository @Inject constructor(
         }
 
         Unit
+    }
+
+    suspend fun getOtherDocuments(userId: Int): OtherDocumentListResponse {
+        return documentApi.getOtherDocuments(userId)
     }
 
 }

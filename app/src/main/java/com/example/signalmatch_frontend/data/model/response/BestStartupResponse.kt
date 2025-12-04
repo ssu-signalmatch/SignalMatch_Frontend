@@ -7,7 +7,7 @@ data class BestStartupResponse(
 )
 
 data class BestStartupItem(
-    val startupId: Int,
+    val userId: Int,
     val startupName: String,
     val intro: String,
     val bookmarkCount: Int
