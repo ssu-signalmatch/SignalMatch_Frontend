@@ -9,7 +9,8 @@ data class MyPageResponse(
 data class MeData(
     val mypage: Mypage,
     val bookmarkCount: Int,
-    val profileImageUrl: String?
+    val profileImageUrl: String?,
+    val updatedAt: String?
 )
 
 sealed interface Mypage

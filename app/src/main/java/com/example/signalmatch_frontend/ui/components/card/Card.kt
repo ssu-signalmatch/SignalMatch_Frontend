@@ -503,14 +503,16 @@ fun SearchCard3(
         )
     ) {
         Row(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 10.dp)
         ){
             Row(
                 modifier = Modifier.fillMaxHeight(),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.width(72.dp))
+                Spacer(modifier = Modifier.width(36.dp))
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Center
@@ -525,7 +527,8 @@ fun SearchCard3(
                         text = category,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF848484)
+                        color = Color(0xFF848484),
+                        modifier = Modifier.width(220.dp)
                     )
                 }
             }

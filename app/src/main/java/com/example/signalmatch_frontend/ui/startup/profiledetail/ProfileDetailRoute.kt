@@ -4,18 +4,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.signalmatch_frontend.viewmodel.StartupProfileDetailViewModel
-
 
 @Composable
 fun StartupProfileDetailRoute(
@@ -25,20 +19,31 @@ fun StartupProfileDetailRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lastUpdatedFromVm by viewModel.lastUpdatedDate.collectAsState(initial = null)
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
+    val updatedAtFromEditFlow =
+        savedStateHandle?.getStateFlow<String?>("startup_profile_updated_at", null)
 
-    val currentBackStackEntry = navController.currentBackStackEntry
-    val updatedAtState = currentBackStackEntry
-        ?.savedStateHandle
-        ?.getStateFlow("startup_profile_updated_at", null)
-
-    val updatedAt by updatedAtState?.collectAsState()
+    val updatedAtFromEdit by updatedAtFromEditFlow
+        ?.collectAsState()
         ?: remember { mutableStateOf<String?>(null) }
 
-    val lastUpdatedToShow = updatedAt ?: lastUpdatedFromVm
+    val refreshFlagFlow =
+        savedStateHandle?.getStateFlow("refresh_startup_profile", false)
 
-    LaunchedEffect(userId) {
+    val refreshFlag by refreshFlagFlow
+        ?.collectAsState()
+        ?: remember { mutableStateOf(false) }
+
+
+    val lastUpdatedToShow = updatedAtFromEdit ?: lastUpdatedFromVm
+
+    LaunchedEffect(userId, refreshFlag) {
         viewModel.refresh()
+
+        if (refreshFlag) {
+            savedStateHandle?.set("refresh_startup_profile", false)
+        }
     }
 
     when (val state = uiState) {
@@ -52,7 +57,12 @@ fun StartupProfileDetailRoute(
         }
 
         is StartupProfileDetailViewModel.UiState.Error -> {
-            Text(text = state.message)
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = state.message)
+            }
         }
 
         is StartupProfileDetailViewModel.UiState.Success -> {
@@ -67,4 +77,3 @@ fun StartupProfileDetailRoute(
         }
     }
 }
-

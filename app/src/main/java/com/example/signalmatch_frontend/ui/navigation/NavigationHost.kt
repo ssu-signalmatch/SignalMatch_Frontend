@@ -10,6 +10,9 @@ import androidx.navigation.navArgument
 import com.example.signalmatch_frontend.ui.landing.LandingScreen
 import com.example.signalmatch_frontend.ui.login.LoginScreen
 import com.example.signalmatch_frontend.ui.home.HomeScreen
+import com.example.signalmatch_frontend.ui.info.InfoIRRoute
+import com.example.signalmatch_frontend.ui.info.InvestorInfoRoute
+import com.example.signalmatch_frontend.ui.info.StartupInfoRoute
 import com.example.signalmatch_frontend.ui.investor.mypage.InvestorMypageRoute
 import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorCreateProfileRoute
 import com.example.signalmatch_frontend.ui.investor.profiledetail.InvestorProfileDetailRoute
@@ -141,6 +144,47 @@ fun NavigationHost(
             )
         }
 
+        //검색 - 상세 조회
+        composable(
+            route = "startup-info/{userId}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+
+            StartupInfoRoute(
+                navController = navController,
+                userId = userId
+            )
+        }
+
+        composable(
+            route = "investor-info/{userId}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+
+            InvestorInfoRoute(
+                navController = navController,
+                userId = userId
+            )
+        }
+
+        composable(
+            route = "info-ir/{startupId}",
+            arguments = listOf(
+                navArgument("startupId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val startupId = backStackEntry.arguments?.getInt("startupId") ?: -1
+            InfoIRRoute(
+                navController = navController,
+                startupId = startupId
+            )
+        }
 
         //마이페이지
         composable("investor-mypage/{userId}") { backStackEntry ->

@@ -20,18 +20,31 @@ fun InvestorProfileDetailRoute(
     val uiState by viewModel.uiState.collectAsState()
     val lastUpdatedFromVm by viewModel.lastUpdatedDate.collectAsState(initial = null)
 
-    val currentBackStackEntry = navController.currentBackStackEntry
-    val updatedAtState = currentBackStackEntry
-        ?.savedStateHandle
-        ?.getStateFlow("investor_profile_updated_at", null)
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
-    val updatedAt by updatedAtState?.collectAsState()
+    val updatedAtFromEditFlow =
+        savedStateHandle?.getStateFlow("investor_profile_updated_at", null)
+
+    val updatedAtFromEdit by updatedAtFromEditFlow
+        ?.collectAsState()
         ?: remember { mutableStateOf<String?>(null) }
 
-    val lastUpdatedToShow = updatedAt ?: lastUpdatedFromVm
+    val refreshFlagFlow =
+        savedStateHandle?.getStateFlow("refresh_investor_profile", false)
 
-    LaunchedEffect(userId) {
+    val refreshFlag by refreshFlagFlow
+        ?.collectAsState()
+        ?: remember { mutableStateOf(false) }
+
+
+    val lastUpdatedToShow = updatedAtFromEdit ?: lastUpdatedFromVm
+
+    LaunchedEffect(userId, refreshFlag) {
         viewModel.refresh()
+
+        if (refreshFlag) {
+            savedStateHandle?.set("refresh_investor_profile", false)
+        }
     }
 
     when (val state = uiState) {
@@ -45,7 +58,12 @@ fun InvestorProfileDetailRoute(
         }
 
         is InvestorProfileDetailViewModel.UiState.Error -> {
-            Text(text = state.message)
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = state.message)
+            }
         }
 
         is InvestorProfileDetailViewModel.UiState.Success -> {

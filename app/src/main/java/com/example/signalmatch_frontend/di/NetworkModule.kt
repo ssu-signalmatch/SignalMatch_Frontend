@@ -4,6 +4,7 @@ import com.example.signalmatch_frontend.data.api.AuthApi
 import com.example.signalmatch_frontend.data.api.AuthInterceptor
 import com.example.signalmatch_frontend.data.api.BookmarkApi
 import com.example.signalmatch_frontend.data.api.DocumentApi
+import com.example.signalmatch_frontend.data.api.InfoApi
 import com.example.signalmatch_frontend.data.api.MatchApi
 import com.example.signalmatch_frontend.data.api.ProfileApi
 import com.example.signalmatch_frontend.data.api.S3Api
@@ -118,6 +119,11 @@ object NetworkModule {
     @Singleton
     fun provideUserApi(retrofit: Retrofit): UserApi =
         retrofit.create(UserApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideInfoApi(retrofit: Retrofit): InfoApi =
+        retrofit.create(InfoApi::class.java)
 
     @Provides
     @Singleton

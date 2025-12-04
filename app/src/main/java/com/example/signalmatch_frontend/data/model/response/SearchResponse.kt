@@ -16,6 +16,8 @@ data class SearchData(
 )
 
 data class StartupSearchDto(
+    val userId: Int,
+    val startupId: Int,
     val startupName: String,
     val intro: String,
     val legalType: String,
@@ -25,6 +27,8 @@ data class StartupSearchDto(
 )
 
 data class InvestorSearchDto(
+    val userId: Int,
+    val investorId: Int,
     val investorName: String,
     val intro: String,
     val organizationName: String,
