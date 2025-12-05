@@ -6,10 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.signalmatch_frontend.data.api.InfoApi
 import com.example.signalmatch_frontend.data.api.SearchApi
 import com.example.signalmatch_frontend.data.model.response.BestStartupItem
 import com.example.signalmatch_frontend.data.model.response.InvestorSearchDto
 import com.example.signalmatch_frontend.data.model.response.StartupSearchDto
+import com.example.signalmatch_frontend.data.repository.InfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +29,8 @@ private val INDUSTRY_AREAS = listOf(
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val searchApi: SearchApi
+    private val searchApi: SearchApi,
+    private val infoRepository: InfoRepository
 ) : ViewModel() {
 
     var query by mutableStateOf("")
@@ -50,6 +53,7 @@ class SearchViewModel @Inject constructor(
 
     var isSearched by mutableStateOf(false)
         private set
+
 
     init {
         loadBestStartups()
@@ -142,4 +146,30 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
+    fun fetchInvestorBookmarkCount(userId: Int, onResult: (Int) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = infoRepository.getInvestorInfo(userId)
+                Log.d("SearchViewModel", "fetchInvestorBookmarkCount userId=$userId, count=${response.data.bookmarkCount}")
+                onResult(response.data.bookmarkCount)
+            } catch (e: Exception) {
+                Log.e("SearchViewModel", "fetchInvestorBookmarkCount error: ${e.message}", e)
+                onResult(0)
+            }
+        }
+    }
+
+    fun fetchStartupBookmarkCount(userId: Int, onResult: (Int) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = infoRepository.getStartupInfo(userId)
+                Log.d("SearchViewModel", "fetchStartupBookmarkCount userId=$userId, count=${response.data.bookmarkCount}")
+                onResult(response.data.bookmarkCount)
+            } catch (e: Exception) {
+                Log.e("SearchViewModel", "fetchStartupBookmarkCount error: ${e.message}", e)
+                onResult(0)
+            }
+        }
+    }
+
 }

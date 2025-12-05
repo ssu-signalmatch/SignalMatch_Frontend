@@ -1,5 +1,6 @@
 package com.example.signalmatch_frontend.ui.search
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,36 +25,38 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.signalmatch_frontend.R
 import com.example.signalmatch_frontend.ui.components.TabBar
 import com.example.signalmatch_frontend.ui.components.button.SearchButton
 import com.example.signalmatch_frontend.ui.components.card.SearchCard1
 import com.example.signalmatch_frontend.ui.components.card.SearchCard2
 import com.example.signalmatch_frontend.ui.components.card.SearchCard3
+import com.example.signalmatch_frontend.viewmodel.BookmarkViewModel
 import com.example.signalmatch_frontend.viewmodel.MypageEntryViewModel
 import com.example.signalmatch_frontend.viewmodel.SearchViewModel
+import androidx.compose.runtime.getValue
+import com.example.signalmatch_frontend.data.model.response.BestStartupItem
 
 @Composable
 fun SearchScreen(
     navController: NavHostController,
     userId: Int,
     viewModel: SearchViewModel = hiltViewModel(),
-    mypageViewModel: MypageEntryViewModel = hiltViewModel()
+    mypageViewModel: MypageEntryViewModel = hiltViewModel(),
+    bookmarkViewModel: BookmarkViewModel = hiltViewModel()
 ) {
+    val bookmarkUiState by bookmarkViewModel.uiState.collectAsState()
+
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
@@ -67,6 +70,14 @@ fun SearchScreen(
     val isSearched = viewModel.isSearched
 
     val hasResult = startups.isNotEmpty() || investors.isNotEmpty()
+
+    LaunchedEffect(Unit) {
+        bookmarkViewModel.loadBookmarks()
+    }
+
+    LaunchedEffect(bookmarkUiState.bookmark.size) {
+        viewModel.loadBestStartups()
+    }
 
     Scaffold(
         bottomBar = {
@@ -388,11 +399,20 @@ fun SearchScreen(
                                 else
                                     startup.investorStages
 
+                            var startupBookmarkCount by remember(startup.userId) { mutableStateOf(0) }
+
+                            LaunchedEffect(startup.userId) {
+                                viewModel.fetchStartupBookmarkCount(startup.userId) { count ->
+                                    Log.d("SearchScreen", "startup ${startup.userId} bookmarkCount=$count")
+                                    startupBookmarkCount = count
+                                }
+                            }
+
                             SearchCard3(
                                 navController = navController,
                                 name = startup.startupName,
                                 category = category,
-                                saveCount = viewModel.getBookmarkCountForUser(startup.userId),
+                                saveCount = startupBookmarkCount,
                                 onClick = {
                                     navController.navigate("startup-info/${startup.userId}")
                                 }
@@ -412,11 +432,20 @@ fun SearchScreen(
                                 else
                                     investor.investorType
 
+                            var investorBookmarkCount by remember(investor.userId) { mutableStateOf(0) }
+
+                            LaunchedEffect(investor.userId) {
+                                viewModel.fetchStartupBookmarkCount(investor.userId) { count ->
+                                    Log.d("SearchScreen", "startup ${investor.userId} bookmarkCount=$count")
+                                    investorBookmarkCount = count
+                                }
+                            }
+
                             SearchCard3(
                                 navController = navController,
                                 name = investor.investorName,
                                 category = category,
-                                saveCount = viewModel.getBookmarkCountForUser(investor.userId),
+                                saveCount = investorBookmarkCount,
                                 onClick = {
                                     navController.navigate("investor-info/${investor.userId}")
                                 }
@@ -451,7 +480,13 @@ fun SearchScreen(
                                 Text("등록된 start-up이 없습니다.")
                             }
                         } else {
-                            bestStartups.take(3).forEachIndexed { index, item ->
+
+                            val sortedBestStartups = bestStartups.sortedWith(
+                                compareByDescending<BestStartupItem> { it.bookmarkCount }
+                                    .thenBy { it.startupName }
+                            )
+
+                            sortedBestStartups.take(3).forEachIndexed { index, item ->
                                 val iconRes = when (index) {
                                     0 -> R.drawable.ic_1st
                                     1 -> R.drawable.ic_2nd
@@ -464,7 +499,7 @@ fun SearchScreen(
                                     iconRes,
                                     item.startupName,
                                     item.intro,
-                                    item.bookmarkCount,
+                                    saveCount = item.bookmarkCount,
                                     onClick = {
                                         navController.navigate("startup-info/${item.userId}")
                                     }
@@ -472,7 +507,7 @@ fun SearchScreen(
                                 Spacer(Modifier.height(17.dp))
                             }
 
-                            bestStartups.drop(3).forEachIndexed { index, item ->
+                            sortedBestStartups.drop(3).forEachIndexed { index, item ->
                                 val rank = (index + 4).toString()
 
                                 SearchCard2(
@@ -480,7 +515,7 @@ fun SearchScreen(
                                     rank,
                                     item.startupName,
                                     item.intro,
-                                    item.bookmarkCount,
+                                    saveCount = item.bookmarkCount,
                                     onClick = {
                                         navController.navigate("startup-info/${item.userId}")
                                     }
@@ -498,11 +533,3 @@ fun SearchScreen(
 }
 
 
-
-
-/*@Preview
-@Composable
-fun SearchPreview(){
-    val navController = rememberNavController()
-    SearchScreen(navController)
-}*/

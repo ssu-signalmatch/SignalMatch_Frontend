@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.signalmatch_frontend.R
 import com.example.signalmatch_frontend.data.model.response.StartupInfo
+import com.example.signalmatch_frontend.ui.components.etc.BookmarkIcon
 import com.example.signalmatch_frontend.ui.components.image.ProfileImageSelector
+import com.example.signalmatch_frontend.viewmodel.BookmarkViewModel
 
 @Composable
 fun StartupInfoScreen(
@@ -27,7 +29,9 @@ fun StartupInfoScreen(
     startupInfo: StartupInfo,
     profileImageUrl: String?,
     lastUpdatedDate: String?,
-    bookmarkCount: Int
+    bookmarkViewModel: BookmarkViewModel,
+    bookmarkCount: Int,
+    onRefreshInfo: () -> Unit
 ) {
     val introText = startupInfo.intro ?: ""
 
@@ -43,7 +47,21 @@ fun StartupInfoScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(60.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 50.dp),
+                horizontalAlignment = Alignment.End,
+            ) {
+                BookmarkIcon(
+                    targetUserId = userId,
+                    bookmarkViewModel = bookmarkViewModel,
+                    onChanged = onRefreshInfo
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             ProfileImageSelector(
                 userId = userId,

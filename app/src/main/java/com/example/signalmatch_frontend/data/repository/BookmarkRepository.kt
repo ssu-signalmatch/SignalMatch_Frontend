@@ -1,26 +1,58 @@
 package com.example.signalmatch_frontend.data.repository
 
+import android.util.Log
 import com.example.signalmatch_frontend.data.api.BookmarkApi
 import com.example.signalmatch_frontend.data.model.request.AddBookmarkRequest
-import com.example.signalmatch_frontend.data.model.response.AddBookmarkResponse
-import com.example.signalmatch_frontend.data.model.response.DeleteBookmarkResponse
-import com.example.signalmatch_frontend.data.model.response.GetBookmarkResponse
+import com.example.signalmatch_frontend.data.model.response.AddBookmarkData
+import com.example.signalmatch_frontend.data.model.response.TargetItem
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class BookmarkRepository @Inject constructor(
-    private val api: BookmarkApi
+    private val bookmarkApi: BookmarkApi
 ) {
-    suspend fun getBookmark(): GetBookmarkResponse {
-        return api.getBookmark()
+    companion object {
+        private const val TAG = "BookmarkRepository"
     }
 
-    suspend fun addBookmark(request: AddBookmarkRequest): AddBookmarkResponse {
-        return api.addBookmark(request)
+    //추가
+    suspend fun addBookmark(targetUserId: Int): Result<AddBookmarkData> = runCatching {
+        val response = bookmarkApi.addBookmark(
+            AddBookmarkRequest(
+                targetUserId = targetUserId
+            )
+        )
+
+        if (!response.success) {
+            Log.e(TAG, "addBookmark failed: ${response.message}")
+            throw IllegalStateException(response.message)
+        }
+
+        response.data
     }
 
-    suspend fun deleteBookmark(targetUserId: Int): DeleteBookmarkResponse {
-        return api.deleteBookmark(targetUserId)
+    //조회
+    suspend fun getBookmarks(): Result<List<TargetItem>> = runCatching {
+        val response = bookmarkApi.getBookmark()
+
+        if (!response.success) {
+            Log.e(TAG, "getBookmarks failed: ${response.message}")
+            throw IllegalStateException(response.message)
+        }
+
+        response.data
+    }
+
+    //삭제
+    suspend fun deleteBookmark(targetUserId: Int): Result<Unit> = runCatching {
+        val response = bookmarkApi.deleteBookmark(targetUserId)
+
+        if (!response.success) {
+            Log.e(TAG, "deleteBookmark failed: ${response.message}")
+            throw IllegalStateException(response.message)
+        }
+
+        Unit
     }
 }
