@@ -22,7 +22,8 @@ class StartupInfoViewModel @Inject constructor(
         data class Success(
             val startup: StartupInfo,
             val profileImageUrl: String?,
-            val updatedAt: String?
+            val updatedAt: String?,
+            val bookmarkCount: Int,
         ) : UiState
         data class Error(val message: String) : UiState
     }
@@ -59,7 +60,8 @@ class StartupInfoViewModel @Inject constructor(
                     profileImageUrl = data.profileImageUrl,
                     updatedAt = data.updatedAt
                         ?.take(10)
-                        ?.replace("-", ".")
+                        ?.replace("-", "."),
+                    bookmarkCount = data.bookmarkCount
                 )
 
             } catch (e: HttpException) {
@@ -85,7 +87,8 @@ class InvestorInfoViewModel @Inject constructor(
         data class Success(
             val investor: InvestorInfo,
             val profileImageUrl: String?,
-            val updatedAt: String?
+            val updatedAt: String?,
+            val bookmarkCount: Int,
         ) : UiState
         data class Error(val message: String) : UiState
     }
@@ -122,7 +125,8 @@ class InvestorInfoViewModel @Inject constructor(
                     profileImageUrl = data.profileImageUrl,
                     updatedAt = data.updatedAt
                         ?.take(10)
-                        ?.replace("-", ".")
+                        ?.replace("-", "."),
+                    bookmarkCount = data.bookmarkCount
                 )
 
             } catch (e: HttpException) {

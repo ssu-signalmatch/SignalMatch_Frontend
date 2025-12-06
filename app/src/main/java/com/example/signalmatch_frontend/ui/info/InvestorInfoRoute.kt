@@ -12,20 +12,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.signalmatch_frontend.viewmodel.SearchViewModel
+import com.example.signalmatch_frontend.viewmodel.BookmarkViewModel
 import com.example.signalmatch_frontend.viewmodel.InvestorInfoViewModel
+import com.example.signalmatch_frontend.viewmodel.SearchViewModel
 
 @Composable
 fun InvestorInfoRoute(
     navController: NavController,
     userId: Int,
     infoViewModel: InvestorInfoViewModel = hiltViewModel(),
-    searchViewModel: SearchViewModel = hiltViewModel()
+    bookmarkViewModel: BookmarkViewModel = hiltViewModel()
 ) {
     val uiState by infoViewModel.uiState.collectAsState()
 
     LaunchedEffect(userId) {
         infoViewModel.loadInfo(userId)
+        bookmarkViewModel.loadBookmarks()
     }
 
     when (val state = uiState) {
@@ -33,21 +35,24 @@ fun InvestorInfoRoute(
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+            ) {
+                CircularProgressIndicator()
+            }
         }
 
         is InvestorInfoViewModel.UiState.Error -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ) { Text(text = state.message) }
+            ) {
+                Text(text = state.message)
+            }
         }
 
         is InvestorInfoViewModel.UiState.Success -> {
             val investor = state.investor
             val profileImageUrl = state.profileImageUrl
             val lastUpdatedDate = state.updatedAt
-            val bookmarkCount = searchViewModel.getBookmarkCountForUser(userId)
 
             InvestorInfoScreen(
                 navController = navController,
@@ -55,7 +60,11 @@ fun InvestorInfoRoute(
                 investorInfo = investor,
                 profileImageUrl = profileImageUrl,
                 lastUpdatedDate = lastUpdatedDate,
-                bookmarkCount = bookmarkCount
+                bookmarkViewModel = bookmarkViewModel,
+                bookmarkCount = state.bookmarkCount,
+                onRefreshInfo = {
+                    infoViewModel.loadInfo(userId)
+                }
             )
         }
     }

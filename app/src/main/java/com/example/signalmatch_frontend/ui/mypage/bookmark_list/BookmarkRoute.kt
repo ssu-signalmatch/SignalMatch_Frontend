@@ -1,6 +1,8 @@
 package com.example.signalmatch_frontend.ui.mypage.bookmark_list
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -11,12 +13,18 @@ fun BookmarkRoute(
     navController: NavController,
     viewModel: BookmarkViewModel = hiltViewModel(),
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadBookmarks()
+    }
 
     BookmarkScreen(
         navController = navController,
         uiState = uiState,
-        onRefresh = { viewModel.loadBookmark() },
+        onRefresh = {
+            viewModel.loadBookmarks()
+        },
         onConfirmDelete = { id ->
             viewModel.deleteBookmark(id)
         }

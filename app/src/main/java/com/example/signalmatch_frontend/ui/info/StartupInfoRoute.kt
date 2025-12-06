@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.signalmatch_frontend.viewmodel.BookmarkViewModel
 import com.example.signalmatch_frontend.viewmodel.SearchViewModel
 import com.example.signalmatch_frontend.viewmodel.StartupInfoViewModel
 
@@ -20,12 +21,13 @@ fun StartupInfoRoute(
     navController: NavController,
     userId: Int,
     infoViewModel: StartupInfoViewModel = hiltViewModel(),
-    searchViewModel: SearchViewModel = hiltViewModel()
+    bookmarkViewModel: BookmarkViewModel = hiltViewModel(),
 ) {
     val uiState by infoViewModel.uiState.collectAsState()
 
     LaunchedEffect(userId) {
         infoViewModel.loadInfo(userId)
+        bookmarkViewModel.loadBookmarks()
     }
 
     when (val state = uiState) {
@@ -47,7 +49,6 @@ fun StartupInfoRoute(
             val startup = state.startup
             val profileImageUrl = state.profileImageUrl
             val lastUpdatedDate = state.updatedAt
-            val bookmarkCount = searchViewModel.getBookmarkCountForUser(userId)
 
             StartupInfoScreen(
                 navController = navController,
@@ -55,7 +56,11 @@ fun StartupInfoRoute(
                 startupInfo = startup,
                 profileImageUrl = profileImageUrl,
                 lastUpdatedDate = lastUpdatedDate,
-                bookmarkCount = bookmarkCount
+                bookmarkViewModel = bookmarkViewModel,
+                bookmarkCount = state.bookmarkCount,
+                onRefreshInfo = {
+                    infoViewModel.loadInfo(userId)
+                }
             )
         }
     }
