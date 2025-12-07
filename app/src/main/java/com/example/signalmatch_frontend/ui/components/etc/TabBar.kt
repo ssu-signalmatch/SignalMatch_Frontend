@@ -49,6 +49,7 @@ fun TabBar(
                     "home"     -> "home/$userId"
                     "search"   -> "search/$userId"
                     "matching" -> "matching/$userId"
+                    "message"  -> "chat-list/$userId"
                     else       -> route
                 }
 

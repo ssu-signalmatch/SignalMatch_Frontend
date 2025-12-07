@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.signalmatch_frontend.ui.components.etc.Logo
 import androidx.compose.animation.Crossfade
@@ -168,9 +167,13 @@ fun HomeScreen(
     }
 }
 
-/*@Preview
+/*
+@Preview
 @Composable
 fun HomePreview(){
     val navController = rememberNavController()
-    HomeScreen(navController = navController)
+    HomeScreen(
+        navController = navController,
+        userId = 40
+    )
 }*/

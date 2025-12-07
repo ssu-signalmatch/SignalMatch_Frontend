@@ -3,6 +3,7 @@ package com.example.signalmatch_frontend.di
 import com.example.signalmatch_frontend.data.api.AuthApi
 import com.example.signalmatch_frontend.data.api.AuthInterceptor
 import com.example.signalmatch_frontend.data.api.BookmarkApi
+import com.example.signalmatch_frontend.data.api.ChatApi
 import com.example.signalmatch_frontend.data.api.DocumentApi
 import com.example.signalmatch_frontend.data.api.InfoApi
 import com.example.signalmatch_frontend.data.api.MatchApi
@@ -137,5 +138,10 @@ object NetworkModule {
             .registerTypeAdapter(Mypage::class.java, MypageAdapter())
             .create()
     }
+
+    @Provides
+    @Singleton
+    fun provideChatApi(retrofit: Retrofit): ChatApi =
+        retrofit.create(ChatApi::class.java)
 
 }

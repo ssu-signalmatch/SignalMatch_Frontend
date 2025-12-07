@@ -27,10 +27,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.signalmatch_frontend.R
 
 @Composable
 fun ChatRoomTitle (
+    navController: NavController,
     modifier: Modifier = Modifier,
     title: String,
     count: Long
@@ -67,7 +69,7 @@ fun ChatRoomTitle (
             ) {
                 IconButton (
                     onClick = {
-                        // TODO
+                        navController.popBackStack()
                     },
                     modifier = Modifier
                         .height(28.dp)
