@@ -22,6 +22,7 @@ import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorCreate
 import com.example.signalmatch_frontend.ui.investor.profiledetail.InvestorProfileDetailRoute
 import com.example.signalmatch_frontend.ui.investor.profileedit.InvestorEditProfileRoute
 import com.example.signalmatch_frontend.ui.ir.IRRoute
+import com.example.signalmatch_frontend.ui.match.MatchScreen
 import com.example.signalmatch_frontend.ui.mypage.FAQScreen
 import com.example.signalmatch_frontend.ui.mypage.ManageAccountScreen
 import com.example.signalmatch_frontend.ui.mypage.bookmark_list.BookmarkRoute
@@ -286,6 +287,21 @@ fun NavigationHost(
                 roomName = roomName
             )
         }
+
+        composable(
+            route = "match/{userId}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+
+            MatchScreen(
+                navController = navController,
+                userId = userId
+            )
+        }
+
 
 
         composable("bookmark") { BookmarkRoute(navController) }

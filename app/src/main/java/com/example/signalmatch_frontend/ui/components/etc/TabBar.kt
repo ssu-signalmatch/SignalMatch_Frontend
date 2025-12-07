@@ -48,7 +48,7 @@ fun TabBar(
                 val navigateRoute = when (route) {
                     "home"     -> "home/$userId"
                     "search"   -> "search/$userId"
-                    "matching" -> "matching/$userId"
+                    "matching" -> "match/$userId"
                     "message"  -> "chat-list/$userId"
                     else       -> route
                 }
