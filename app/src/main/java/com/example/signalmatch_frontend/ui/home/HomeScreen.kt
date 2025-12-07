@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.signalmatch_frontend.ui.components.etc.Logo
 import androidx.compose.animation.Crossfade
@@ -30,6 +29,9 @@ import androidx.navigation.NavHostController
 import com.example.signalmatch_frontend.ui.components.TabBar
 import com.example.signalmatch_frontend.viewmodel.MypageEntryViewModel
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.signalmatch_frontend.data.model.response.SearchResponse
 
 
 private enum class Tab { Recommend, News }
@@ -92,7 +94,10 @@ private fun TabText(
         fontSize = 20.sp,
         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
         color = if (selected) Color.Black else Color(0xFFBDBDBD),
-        modifier = Modifier.clickable(onClick = onClick)
+        modifier = Modifier.clickable(
+            enabled = true,
+            onClick = onClick
+        )
     )
 }
 
@@ -103,11 +108,16 @@ private fun RecommendCompaniesContent() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        HomeSuggestTabContainer (
+
+        )
+
+        /*
         Text(
             text = "추천 기업 리스트 자리",
             style = MaterialTheme.typography.bodyLarge,
             color = Color(0xFF757575)
-        )
+        )*/
     }
 }
 
@@ -117,11 +127,17 @@ private fun RecentNewsContent() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        HomeSuggestTabContainer (
+
+        )
+
+        /*
         Text(
             text = "최근 뉴스 리스트 자리",
             style = MaterialTheme.typography.bodyLarge,
             color = Color(0xFF757575)
         )
+         */
     }
 }
 
@@ -129,7 +145,7 @@ private fun RecentNewsContent() {
 fun HomeScreen(
     navController: NavHostController,
     userId: Int,
-    mypageViewModel: MypageEntryViewModel = hiltViewModel()
+    //mypageViewModel: MypageEntryViewModel = hiltViewModel()
 ) {
 
     val context = LocalContext.current
@@ -140,6 +156,7 @@ fun HomeScreen(
                 navController = navController,
                 userId = userId,
                 onMypageClick = {
+                    /*
                     mypageViewModel.openMypage(
                         navController = navController,
                         userId = userId,
@@ -147,6 +164,7 @@ fun HomeScreen(
                             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                         }
                     )
+                     */
                 }
             )
         },
@@ -168,9 +186,12 @@ fun HomeScreen(
     }
 }
 
-/*@Preview
+@Preview
 @Composable
 fun HomePreview(){
     val navController = rememberNavController()
-    HomeScreen(navController = navController)
-}*/
+    HomeScreen(
+        navController = navController,
+        userId = 40
+    )
+}

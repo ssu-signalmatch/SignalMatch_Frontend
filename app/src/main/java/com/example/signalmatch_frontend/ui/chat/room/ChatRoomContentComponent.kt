@@ -5,6 +5,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,10 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,60 +36,47 @@ import androidx.compose.ui.unit.sp
 fun ChatRoomContentContainer (
     chatItems: List<ChatItem>
 ) {
-    val scrollState: ScrollState = rememberScrollState()
+    val scrollState = rememberLazyListState()
 
-    Column (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 12.dp, end = 12.dp)
-            .scrollable(
-                state = scrollState,
-                orientation = Orientation.Horizontal
-            )
-    ) {
-        ChatRoomContent(
-            chatItems = chatItems
-        )
+    LaunchedEffect(chatItems.size) {
+        if (chatItems.isNotEmpty()) scrollState.scrollToItem(chatItems.size - 1)
     }
-}
 
-@Composable
-fun ChatRoomContent (
-    chatItems: List<ChatItem>
-) {
-    for (i: Int in 0..<chatItems.size) {
-        val item: ChatItem = chatItems[i]
-        val isContinuous: Boolean =
-            (i > 0 && chatItems[i - 1].getSender() == item.getSender() && chatItems[i - 1].getUserId() == item.getUserId())
-            || (chatItems.size > i + 1 && chatItems[i + 1].getSender() == item.getSender() && chatItems[i + 1].getUserId() == item.getUserId())
-        val isFirst: Boolean =
-            (i == 0)
-            || (chatItems[i - 1].getSender() != item.getSender())
-            || (chatItems[i - 1].getUserId() != item.getUserId())
-        val isLast: Boolean =
-            (chatItems.size < i + 2)
-            || (chatItems.size > i + 1 && chatItems[i + 1].getSender() != item.getSender())
-            || (chatItems.size > i + 1 && chatItems[i + 1].getUserId() != item.getUserId())
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp),
+        state = scrollState
+    ) {
+        itemsIndexed(chatItems.reversed()) { i, item ->
+            val isContinuous: Boolean = (i > 0 && chatItems[i - 1].getSender() == item.getSender() && chatItems[i - 1].getUserId() == item.getUserId())
+                    || (chatItems.size > i + 1 && chatItems[i + 1].getSender() == item.getSender() && chatItems[i + 1].getUserId() == item.getUserId())
+            val isFirst: Boolean = (i == 0)
+                    || (chatItems[i - 1].getSender() != item.getSender())
+                    || (chatItems[i - 1].getUserId() != item.getUserId())
+            val isLast: Boolean = (chatItems.size < i + 2)
+                    || (chatItems.size > i + 1 && chatItems[i + 1].getSender() != item.getSender())
+                    || (chatItems.size > i + 1 && chatItems[i + 1].getUserId() != item.getUserId())
 
-        if (isFirst) {
-            Spacer(modifier = Modifier.height(30.dp))
-        } else {
-            Spacer(modifier = Modifier.height(6.dp))
-        }
+            if (isFirst) {
+                Spacer(modifier = Modifier.height(30.dp))
+            } else {
+                Spacer(modifier = Modifier.height(6.dp))
+            }
 
-        if (item.getSender() == ChatItemSender.SEND && item.getType() == ChatItemType.TEXT) {
-            ChatRoomContentTextSend (
-                chatItem = chatItems[i],
-                isContinuous = isContinuous,
-                isLast = isLast
-            )
-        } else if (item.getSender() == ChatItemSender.RECEIVE && item.getType() == ChatItemType.TEXT) {
-            ChatRoomContentTextReceive (
-                chatItem = chatItems[i],
-                isContinuous = isContinuous,
-                isFirst = isFirst,
-                isLast = isLast
-            )
+            if (item.getSender() == ChatItemSender.SEND && item.getType() == ChatItemType.TEXT) {
+                ChatRoomContentTextSend (
+                    chatItem = item,
+                    isContinuous = isContinuous,
+                    isLast = isLast
+                )
+            } else if (item.getSender() == ChatItemSender.RECEIVE && item.getType() == ChatItemType.TEXT) {
+                ChatRoomContentTextReceive (
+                    chatItem = item,
+                    isContinuous = isContinuous,
+                    isFirst = isFirst,
+                    isLast = isLast
+                )
+            }
         }
     }
 }

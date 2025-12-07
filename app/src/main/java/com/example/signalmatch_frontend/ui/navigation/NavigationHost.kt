@@ -7,6 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.signalmatch_frontend.ui.chat.list.ChatListRoute
+import com.example.signalmatch_frontend.ui.chat.list.ChatListScreen
+import com.example.signalmatch_frontend.ui.chat.room.ChatRoomRoute
+import com.example.signalmatch_frontend.ui.chat.room.ChatRoomScreen
 import com.example.signalmatch_frontend.ui.landing.LandingScreen
 import com.example.signalmatch_frontend.ui.login.LoginScreen
 import com.example.signalmatch_frontend.ui.home.HomeScreen
@@ -18,6 +22,7 @@ import com.example.signalmatch_frontend.ui.investor.profilecreate.InvestorCreate
 import com.example.signalmatch_frontend.ui.investor.profiledetail.InvestorProfileDetailRoute
 import com.example.signalmatch_frontend.ui.investor.profileedit.InvestorEditProfileRoute
 import com.example.signalmatch_frontend.ui.ir.IRRoute
+import com.example.signalmatch_frontend.ui.match.MatchScreen
 import com.example.signalmatch_frontend.ui.mypage.FAQScreen
 import com.example.signalmatch_frontend.ui.mypage.ManageAccountScreen
 import com.example.signalmatch_frontend.ui.mypage.bookmark_list.BookmarkRoute
@@ -249,11 +254,60 @@ fun NavigationHost(
             )
         }
 
+        composable(
+            route = "chat-list/{userId}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+
+            ChatListRoute(
+                navController = navController,
+                userId = userId
+            )
+        }
+
+        composable(
+            route = "chat-room/{userId}/{roomId}/{roomName}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.LongType },
+                navArgument("roomId") { type = NavType.LongType },
+                navArgument("roomName") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getLong("userId") ?: -1
+            val roomId = backStackEntry.arguments?.getLong("roomId") ?: -1
+            val roomName = backStackEntry.arguments?.getString("roomName") ?: ""
+
+            ChatRoomRoute(
+                navController = navController,
+                userId = userId,
+                roomId = roomId,
+                roomName = roomName
+            )
+        }
+
+        composable(
+            route = "match/{userId}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+
+            MatchScreen(
+                navController = navController,
+                userId = userId
+            )
+        }
+
+
+
         composable("bookmark") { BookmarkRoute(navController) }
         composable("matching-list") { MatchingListRoute(navController) }
         composable("manage account") { ManageAccountScreen(navController) }
         composable("FAQ") { FAQScreen(navController) }
-        // composable("chat") { ChatListScreen(navController) }
 
     }
 }

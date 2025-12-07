@@ -1,3 +1,4 @@
+
 package com.example.signalmatch_frontend.ui.chat.list
 
 import androidx.compose.foundation.Image
@@ -34,10 +35,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 
 
 @Composable
 fun ChatListContainer (
+    navController: NavController,
+    userId: Int,
     chatItems: List<ChatListItem>
 ) {
     val scrollState: ScrollState = rememberScrollState()
@@ -53,7 +58,11 @@ fun ChatListContainer (
     ) {
         LazyColumn {
             items(chatItems) {
-                item -> ChatListItemUnit(item)
+                item -> ChatListItemUnit(
+                    navController = navController,
+                    userId = userId,
+                    chatItem = item
+                )
             }
         }
     }
@@ -61,11 +70,13 @@ fun ChatListContainer (
 
 @Composable
 fun ChatListItemUnit (
+    navController: NavController,
+    userId: Int,
     chatItem: ChatListItem
 ): Unit {
     Button (
         onClick = {
-            // TODO
+            navController.navigate("chat-room/${userId}/${chatItem.getChatId()}/${chatItem.getName()}")
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -97,7 +108,9 @@ fun ChatListItemUnit (
             ) { // Profile Image Box
                 chatItem.getProfileImage()?.let {
                     Image (
-                        painter = it,
+                        painter = rememberAsyncImagePainter(
+                            model = chatItem.getProfileImage()
+                        ),
                         contentDescription = "profile image / ${chatItem.getName()}",
                         contentScale = ContentScale.FillBounds
                     )
@@ -124,7 +137,7 @@ fun ChatListItemUnit (
                     verticalArrangement = Arrangement.SpaceBetween
                 ) { // Title, Preview Column Layout
                     Text (
-                        text = chatItem.getName(),
+                        text = chatItem.getName() ?: "",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
@@ -133,7 +146,7 @@ fun ChatListItemUnit (
                     )
 
                     Text (
-                        text = chatItem.getPreview(),
+                        text = chatItem.getPreview() ?: "",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF848484),
@@ -150,32 +163,27 @@ fun ChatListItemUnit (
                         alignment = Alignment.Bottom
                     )
                 ) {
-                    Text (
-                        modifier = Modifier
-                            .height(16.dp)
-                            .width(
-                                when (chatItem.getBadgeString().length) {
-                                    0 -> 0.dp
-                                    1 -> 16.dp
-                                    2 -> 20.dp
-                                    else -> 24.dp
-                                }
-                            )
-                            .background(
-                                color = Color(0xFFAEF1EB),
-                                shape = RoundedCornerShape(8.dp)
-                            ),
-                        text = chatItem.getBadgeString(),
-                        fontSize = 8.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
-                        maxLines = 1,
-                        lineHeight = 16.sp,
-                        textAlign = TextAlign.Center
-                    )
+                    if (chatItem.getIsUnread()) {
+                        Text(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .width(16.dp)
+                                .background(
+                                    color = Color(0xFFAEF1EB),
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
+                            text = "N",
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            maxLines = 1,
+                            lineHeight = 16.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
                     Text (
-                        text = chatItem.getTime(),
+                        text = chatItem.getFormattedTimestamp() ?: "",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF848484),

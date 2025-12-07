@@ -1,6 +1,7 @@
 package com.example.signalmatch_frontend.ui.chat.room
 
 import androidx.compose.ui.graphics.painter.Painter
+import com.example.signalmatch_frontend.data.model.response.ApiGetChatsRoomsMessagesResponse
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
