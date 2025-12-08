@@ -11,6 +11,7 @@ import com.example.signalmatch_frontend.ui.chat.list.ChatListRoute
 import com.example.signalmatch_frontend.ui.chat.list.ChatListScreen
 import com.example.signalmatch_frontend.ui.chat.room.ChatRoomRoute
 import com.example.signalmatch_frontend.ui.chat.room.ChatRoomScreen
+import com.example.signalmatch_frontend.ui.home.HomeRoute
 import com.example.signalmatch_frontend.ui.landing.LandingScreen
 import com.example.signalmatch_frontend.ui.login.LoginScreen
 import com.example.signalmatch_frontend.ui.home.HomeScreen
@@ -128,7 +129,7 @@ fun NavigationHost(
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getInt("userId") ?: -1
 
-            HomeScreen(
+            HomeRoute(
                 navController = navController,
                 userId = userId
             )

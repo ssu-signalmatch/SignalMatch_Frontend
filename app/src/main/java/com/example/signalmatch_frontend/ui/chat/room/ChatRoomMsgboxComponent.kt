@@ -30,12 +30,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.signalmatch_frontend.R
+import com.example.signalmatch_frontend.viewmodel.ChatRoomViewModel
 
 
 @Composable
 fun ChatRoomMsgBox (
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    roomId: Long,
+    viewModel: ChatRoomViewModel = hiltViewModel()
 ) {
     var type by remember { mutableIntStateOf(ChatItemType.TEXT.code) }
     val message = TextFieldState("")
@@ -114,7 +119,10 @@ fun ChatRoomMsgBox (
 
         IconButton (
             onClick = {
-                // TODO
+                viewModel.sendMessage(
+                    roomId = roomId,
+                    message = message.text as String
+                )
             },
             modifier = Modifier
                 .height(28.dp)

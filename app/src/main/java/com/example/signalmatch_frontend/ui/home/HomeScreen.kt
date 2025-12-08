@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,15 +31,22 @@ import com.example.signalmatch_frontend.ui.components.TabBar
 import com.example.signalmatch_frontend.viewmodel.MypageEntryViewModel
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.signalmatch_frontend.data.model.response.SearchResponse
+import com.example.signalmatch_frontend.ui.chat.list.ChatListUiState
+import com.example.signalmatch_frontend.viewmodel.HomeViewModel
 
 
 private enum class Tab { Recommend, News }
 
 @Composable
 fun HomeCard(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    uiState: HomeUiState,
+    userId: Int,
+    viewModel: HomeViewModel
 ) {
     var selected by remember { mutableStateOf(Tab.Recommend) }
     Column(modifier = modifier.fillMaxWidth()) {
@@ -74,7 +82,11 @@ fun HomeCard(
         ) {
             Crossfade(targetState = selected, label = "tabContent") { tab ->
                 when (tab) {
-                    Tab.Recommend -> RecommendCompaniesContent()
+                    Tab.Recommend -> RecommendCompaniesContent(
+                        uiState = uiState,
+                        userId = userId,
+                        viewModel = viewModel
+                    )
                     Tab.News -> RecentNewsContent()
                 }
             }
@@ -103,14 +115,57 @@ private fun TabText(
 
 
 @Composable
-private fun RecommendCompaniesContent() {
+private fun RecommendCompaniesContent(
+    uiState: HomeUiState,
+    userId: Int,
+    viewModel: HomeViewModel
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        HomeSuggestTabContainer (
+        when (uiState) {
+            is HomeUiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
 
-        )
+            is HomeUiState.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = uiState.message,
+                        color = Color.Red,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+
+            is HomeUiState.Success -> {
+                var isInvestor = false;
+                LaunchedEffect(userId) {
+                    viewModel.loadInvestor(userId) {
+                        isInvestor = it
+                    }
+                }
+
+                HomeSuggestTabContainer (
+                    isInvestor = isInvestor,
+                    searchResponse = uiState.data
+                )
+
+            }
+        }
 
         /*
         Text(
@@ -127,8 +182,14 @@ private fun RecentNewsContent() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        HomeSuggestTabContainer (
-
+        HomeNewsTabContainer(
+            data = arrayListOf(
+                HomeNewItem(1, "정부, ‘나눠먹기식 中企 지원’ 손본다 [AI 프리즘*스타트업 창업자 뉴스]", "서울 경제 | 우승호 기자·박세은 인턴기자", "2025.12.08 06:27:38"),
+                HomeNewItem(2, "퀄컴, 아시아·태평양 AI 스타트업 지원", "인더스트리 뉴스 | 한원석 기자", "2025.12.07 20:27:00"),
+                HomeNewItem(3, "스타트업 투자, 돈되는 뷰티만 '온기'", "이데일리 | 김응태 기자", "2025-12-08 08:37:21"),
+                HomeNewItem(4, "오픈AI, AI 모델 훈련 모니터링 스타트업 ‘넵튠AI’ 인수", "KBS 뉴스 | 이광열 기자", "2025.12.04 05:11:00"),
+                HomeNewItem(5, "[게시판] 산업은행 '넥스트원 부산 3기 데모데이'…스타트업 지원", "연합 뉴스 | 배영 기자", "2025-12-02 15:48:00"),
+            )
         )
 
         /*
@@ -143,9 +204,11 @@ private fun RecentNewsContent() {
 
 @Composable
 fun HomeScreen(
-    navController: NavHostController,
+    navController: NavController,
     userId: Int,
-    //mypageViewModel: MypageEntryViewModel = hiltViewModel()
+    uiState: HomeUiState,
+    mypageViewModel: MypageEntryViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
 
     val context = LocalContext.current
@@ -156,7 +219,6 @@ fun HomeScreen(
                 navController = navController,
                 userId = userId,
                 onMypageClick = {
-                    /*
                     mypageViewModel.openMypage(
                         navController = navController,
                         userId = userId,
@@ -164,7 +226,6 @@ fun HomeScreen(
                             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                         }
                     )
-                     */
                 }
             )
         },
@@ -181,11 +242,16 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(90.dp))
             Logo(126.dp)
             Spacer(modifier = Modifier.height(14.dp))
-            HomeCard()
+            HomeCard(
+                uiState = uiState,
+                userId = userId,
+                viewModel = viewModel
+            )
         }
     }
 }
 
+/*
 @Preview
 @Composable
 fun HomePreview(){
@@ -194,4 +260,4 @@ fun HomePreview(){
         navController = navController,
         userId = 40
     )
-}
+}*/

@@ -32,6 +32,7 @@ class ChatRoomViewModel
     ) {
         viewModelScope.launch {
             _uiState.value = ChatRoomUiState.Loading
+
             try {
                 val response = chatRepository.getMessages(
                     roomId = roomId,
@@ -40,9 +41,8 @@ class ChatRoomViewModel
                 )
                 if (response != null) {
 
-
                     _uiState.value = ChatRoomUiState.Success(
-                        ArrayList()
+                        data = response
                     )
 
                 } else {
@@ -59,9 +59,22 @@ class ChatRoomViewModel
     }
 
     fun sendMessage (
-
+        roomId: Long,
+        message: String
     ) {
-
+        viewModelScope.launch {
+            try {
+                val response = chatRepository.sendMessage(
+                    roomId = roomId,
+                    content = message
+                )
+                loadChatMessages(roomId = roomId)
+            } catch (e: Exception) {
+                _uiState.value = ChatRoomUiState.Error(
+                    e.message ?: "메세지 전송에 실패했습니다"
+                )
+            }
+        }
     }
 
 }

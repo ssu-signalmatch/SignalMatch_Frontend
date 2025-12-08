@@ -1,18 +1,25 @@
 package com.example.signalmatch_frontend.ui.chat.room
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.signalmatch_frontend.ui.chat.list.ChatListUiState
 import java.time.LocalDateTime
 
 
@@ -33,7 +40,6 @@ fun ChatRoomScreen (
                 .fillMaxSize()
                 .padding(0.dp, 0.dp)
         ) {
-
             ChatRoomTitle(
                 navController = navController,
                 title = chatroomName,
@@ -45,8 +51,50 @@ fun ChatRoomScreen (
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                ChatRoomContentContainer (
-                    chatItems = arrayListOf(
+                when (uiState) {
+                    is ChatRoomUiState.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.White),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    is ChatRoomUiState.Error -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.White),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = uiState.message,
+                                color = Color.Red,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+
+                    is ChatRoomUiState.Success -> {
+                        val data = uiState.data
+
+                        ChatRoomContentContainer (
+                            chatItems = data?.map { response ->
+                                ChatItem(
+                                    userId = userId,
+                                    chatroomName = chatroomName,
+                                    apiResponse = response
+                                )
+                            } ?: arrayListOf()
+                        )
+                    }
+                }
+                /*ChatRoomContentContainer (
+                    chatItems =
+                        arrayListOf(
                         ChatItem(
                             chatId = "4",
                             sender = ChatItemSender.RECEIVE,
@@ -88,10 +136,10 @@ fun ChatRoomScreen (
                             read = true
                         )
                     )
-                )
+                )*/
             }
 
-            ChatRoomMsgBox()
+            ChatRoomMsgBox(roomId = chatroomId)
 
         }
     }

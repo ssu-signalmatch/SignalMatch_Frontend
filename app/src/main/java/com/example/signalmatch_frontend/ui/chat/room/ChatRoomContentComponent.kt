@@ -47,7 +47,7 @@ fun ChatRoomContentContainer (
             .padding(start = 12.dp, end = 12.dp),
         state = scrollState
     ) {
-        itemsIndexed(chatItems.reversed()) { i, item ->
+        itemsIndexed(chatItems) { i, item ->
             val isContinuous: Boolean = (i > 0 && chatItems[i - 1].getSender() == item.getSender() && chatItems[i - 1].getUserId() == item.getUserId())
                     || (chatItems.size > i + 1 && chatItems[i + 1].getSender() == item.getSender() && chatItems[i + 1].getUserId() == item.getUserId())
             val isFirst: Boolean = (i == 0)

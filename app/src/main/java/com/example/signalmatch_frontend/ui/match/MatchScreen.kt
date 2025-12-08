@@ -1,11 +1,11 @@
 package com.example.signalmatch_frontend.ui.match
 
 import android.widget.Toast
-import androidx.activity.result.launch
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
@@ -128,58 +127,86 @@ fun MatchScreen (
     }
 }
 
+enum class SwipeDirection {
+    LEFT, RIGHT, DOWN
+}
+
 @Composable
 fun SwipeableMatchingCard() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val swipeThreshold = screenWidth * 0.25f
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val horizontalSwipeThreshold = screenWidth * 0.25f
+    val verticalSwipeThreshold = screenHeight * 0.20f
 
     var offsetX by remember { mutableFloatStateOf(0f) }
-    var swipedOut by remember { mutableStateOf(false) }
+    var offsetY by remember { mutableFloatStateOf(0f) }
+    var swipedOutDirection by remember { mutableStateOf<SwipeDirection?>(null) }
 
 
     val animatedOffsetX by animateFloatAsState(
-        targetValue = if (swipedOut) {
-            if (offsetX > 0) screenWidth.value * 2 else -screenWidth.value * 2
-        } else {
-            offsetX
+        targetValue = when (swipedOutDirection) {
+            SwipeDirection.LEFT -> -screenWidth.value * 2
+            SwipeDirection.RIGHT -> screenWidth.value * 2
+            else -> offsetX // null 또는 DOWN일 때
         },
-        animationSpec = tween(durationMillis = 200),
-        label = "swipeOutAnimation",
+        animationSpec = tween(durationMillis = 300),
+        label = "swipeOutXAnimation"
+    )
+
+    val animatedOffsetY by animateFloatAsState(
+        targetValue = when (swipedOutDirection) {
+            SwipeDirection.DOWN -> screenHeight.value * 2
+            else -> offsetY // null, LEFT, RIGHT일 때
+        },
+        animationSpec = tween(durationMillis = 300),
+        label = "swipeOutYAnimation",
         finishedListener = {
-            if (swipedOut) {
+            if (swipedOutDirection != null) {
                 offsetX = 0f
-                swipedOut = false
-                // TODO: Logic
-                Toast.makeText(context, "Next Card!", Toast.LENGTH_SHORT).show()
+                offsetY = 0f
+                swipedOutDirection = null
+                // TODO: 다음 카드 로딩 로직
+
             }
         }
     )
 
     MatchingCard(
         modifier = Modifier
-            .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
+            .offset { IntOffset(animatedOffsetX.roundToInt(), animatedOffsetY.roundToInt()) }
             .pointerInput(Unit) {
-                detectHorizontalDragGestures(
+                detectDragGestures(
                     onDragEnd = {
                         scope.launch {
-                            if (abs(offsetX) < swipeThreshold.value) offsetX = 0f
+                            if (swipedOutDirection == null) {
+                                offsetX = 0f
+                                offsetY = 0f
+                            }
                         }
                     },
-                    onHorizontalDrag = { change, dragAmount ->
+                    onDrag = { change, dragAmount ->
                         change.consume()
-                        offsetX += dragAmount
+                        if (swipedOutDirection == null) {
+                            offsetX += dragAmount.x
+                            offsetY += dragAmount.y
 
-                        if (abs(offsetX) > swipeThreshold.value) {
-                            if (!swipedOut) {
-                                swipedOut = true
-                                if (offsetX > 0) {
-                                    Toast.makeText(context, "Like!", Toast.LENGTH_SHORT).show()
+                            val absOffsetX = abs(offsetX)
+                            val absOffsetY = abs(offsetY)
+
+                            if (absOffsetX > horizontalSwipeThreshold.value && absOffsetX > absOffsetY) {
+                                swipedOutDirection = if (offsetX > 0) SwipeDirection.RIGHT else SwipeDirection.LEFT
+                                if (swipedOutDirection == SwipeDirection.RIGHT) {
+                                    Toast.makeText(context, "매칭이 신청되었어요", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "북마크에 저장했어요", Toast.LENGTH_SHORT).show()
                                 } else {
-                                    Toast.makeText(context, "Nope!", Toast.LENGTH_SHORT).show()
                                 }
+                            } else if (offsetY > verticalSwipeThreshold.value && absOffsetY > absOffsetX) {
+                                // 아래로 스와이프 (위로는 무시)
+                                swipedOutDirection = SwipeDirection.DOWN
+                                Toast.makeText(context, "넘기기", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }

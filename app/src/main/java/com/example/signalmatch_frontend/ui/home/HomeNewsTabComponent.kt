@@ -25,12 +25,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.signalmatch_frontend.data.model.response.SearchResponse
 
 @Composable
-fun HomeSuggestTabContainer (
-    isInvestor: Boolean,
-    searchResponse: SearchResponse? = null
+fun HomeNewsTabContainer (
+    data: ArrayList<HomeNewItem>?
 ) {
 
     Column (
@@ -38,52 +36,21 @@ fun HomeSuggestTabContainer (
             .fillMaxSize()
             .padding(12.dp)
     ) {
-        if (isInvestor) {
-
-            searchResponse?.data?.startups?.take(4)?.map { item ->
-                HomeSuggestTabItem (
-                    userId = item.userId,
-                    profileId = item.startupId,
-                    type = USERTYPE.STARTUP,
-                    name = item.startupName,
-                    bio1 = "${item.investorStages} | ${item.scale} | ${item.businessAreas.get(0)}",
-                    bio2 = item.intro,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-        } else {
-
-            searchResponse?.data?.investors?.take(4)?.map { item ->
-                HomeSuggestTabItem (
-                    userId = item.userId,
-                    profileId = item.investorId,
-                    type = USERTYPE.INVESTOR,
-                    name = item.investorName,
-                    bio1 = "${item.investorType} | ${item.preferredAreas.get(0)}",
-                    bio2 = item.intro,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
+        data?.take(5)?.map { item ->
+            HomeNewsTabItem (
+                id = item.id,
+                name = item.name,
+                bio1 = item.bio1,
+                bio2 = item.bio2,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
-
-    /*
-    LazyColumn (
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-
-    }
-     */
 }
 
 @Composable
-fun HomeSuggestTabItem (
-    userId: Int,
-    profileId: Int,
-    type: USERTYPE,
+fun HomeNewsTabItem (
+    id: Int,
     name: String,
     bio1: String?,
     bio2: String?,
@@ -125,36 +92,13 @@ fun HomeSuggestTabItem (
 
             Row {
                 Text (
-                    text = if (type == USERTYPE.STARTUP) "스타트업" else "투자자",
-                    modifier = Modifier
-                        .background(
-                            color = Color(0xFFAEF1EB),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .height(22.dp)
-                        .padding(
-                            top = 1.dp,
-                            bottom = 1.dp,
-                            start = 4.dp,
-                            end = 4.dp
-                        )
-                    ,
-                    fontSize = 10.sp,
-                    lineHeight = 10.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF333333),
-                    maxLines = 1
-                )
-
-                Spacer(modifier = Modifier.width(4.dp))
-
-                Text (
                     text = name,
                     fontSize = 16.sp,
                     lineHeight = 22.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF333333),
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
@@ -187,12 +131,12 @@ fun HomeSuggestTabItem (
 
 }
 
-enum class USERTYPE
-constructor (
-    val value: String,
-    val code: Boolean
+data class HomeNewItem  (
+    var id: Int,
+    var name: String,
+    var bio1: String?,
+    var bio2: String?,
+    var profileImage: String? = null
 ) {
-    INVESTOR(value = "Investor", code = false),
-    STARTUP(value = "Startup", code = true)
-    ;
+
 }

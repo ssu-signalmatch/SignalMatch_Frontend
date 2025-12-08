@@ -76,6 +76,21 @@ public constructor (
         read = read
     )
 
+    public constructor (
+        userId: Long,
+        chatroomName: String,
+        apiResponse: ApiGetChatsRoomsMessagesResponse
+    ): this (
+        chatId = apiResponse.id.toString(),
+        sender = if (apiResponse.senderId == userId) ChatItemSender.SEND else ChatItemSender.RECEIVE,
+        type = ChatItemType.TEXT,
+        userId = apiResponse.senderId.toString(),
+        name = chatroomName,
+        message = apiResponse.content,
+        timestamp = LocalDateTime.now(),
+        read = true
+    )
+
     public fun setChatId (ref: String) { this.chatId = ref }
     public fun setSender (ref: ChatItemSender) { this.sender = ref }
     public fun setType (ref: ChatItemType) { this.type = ref }

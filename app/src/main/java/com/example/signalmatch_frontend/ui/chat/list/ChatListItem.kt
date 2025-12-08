@@ -37,7 +37,7 @@ public constructor (
         chatId = apiGetChatsListItem.roomId,
         name = apiGetChatsListItem.opponentName,
         preview = apiGetChatsListItem.lastMessage,
-        timestamp = if (apiGetChatsListItem.lastMessageTime == null) null else LocalDateTime.parse(apiGetChatsListItem.lastMessageTime, DateTimeFormatter.ISO_INSTANT),
+        timestamp = if (apiGetChatsListItem.lastMessageTime == null) null else LocalDateTime.parse(apiGetChatsListItem.lastMessageTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
         isUnread = apiGetChatsListItem.hasUnread,
         profileImage = apiGetChatsListItem.opponentProfileImageUrl
     ) {}
