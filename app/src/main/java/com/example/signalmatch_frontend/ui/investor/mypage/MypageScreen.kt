@@ -2,8 +2,6 @@ package com.example.signalmatch_frontend.ui.investor.mypage
 
 import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -137,19 +135,6 @@ fun InvestorMypageScreen(
                     Spacer(modifier = Modifier.height(5.dp))
 
                     MypageCard2(navController, "즐겨찾기 관리", "매칭 리스트 관리", "bookmark", "matching-list")
-
-                    Spacer(modifier = Modifier.height(18.dp))
-
-                    Text(
-                        "투자 관리",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.offset((-143).dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    MypageCard(navController, "투자 유치 목록", "signup")
 
                     Spacer(modifier = Modifier.height(18.dp))
 
